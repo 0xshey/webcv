@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
@@ -19,13 +18,7 @@ const PDFDownloadButton = dynamic(
 	{ ssr: false, loading: () => null },
 );
 
-export function DashboardShell({
-	username,
-	children,
-}: {
-	username: string;
-	children: ReactNode;
-}) {
+export function DashboardShell({ children }: { children: ReactNode }) {
 	const { signOut } = useAuth();
 	const { isSaving, isDirty, isEditMode, toggleEditMode } = useResume();
 	const { mode } = useSizeMode();
@@ -42,22 +35,8 @@ export function DashboardShell({
 	return (
 		<div className="min-h-screen px-6 py-8 max-w-2xl mx-auto">
 			<header className="flex items-center justify-between mb-12">
-				{/* Left — identity */}
-				<div className="flex items-center gap-2">
-					<span className="text-muted-foreground/30">webcv</span>
-					{username && (
-						<Button
-							asChild
-							variant="ghost"
-							size={btnSize}
-							className="text-muted-foreground/60 gap-1"
-						>
-							<Link href={`/${username}`} target="_blank">
-								/{username}
-							</Link>
-						</Button>
-					)}
-				</div>
+				{/* Left — brand */}
+				<span className="text-muted-foreground/30">webcv</span>
 
 				{/* Right — controls */}
 				<div className="flex items-center gap-2">

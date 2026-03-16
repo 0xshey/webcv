@@ -1,18 +1,40 @@
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
-import type { ResumeContent, ResumeStructure } from "@/lib/types";
+import { ResumeProvider } from "@/components/providers/resume-provider";
+import { DashboardShell } from "@/components/dashboard/dashboard-shell";
+import { Resume } from "@/components/resume/resume";
 import { PublicResume } from "@/components/resume/public-resume";
+import type { ResumeContent, ResumeStructure } from "@/lib/types";
 
-export const revalidate = 60;
+const DEFAULT_CONTENT: ResumeContent = {
+	basics: { name: "", email: "", summary: "" },
+};
+
+const DEFAULT_STRUCTURE: ResumeStructure = {
+	sections: [
+		{ key: "basics", visible: true },
+		{ key: "work", visible: true },
+		{ key: "education", visible: true },
+		{ key: "skills", visible: true },
+		{ key: "projects", visible: false },
+		{ key: "volunteer", visible: false },
+		{ key: "awards", visible: false },
+		{ key: "certificates", visible: false },
+		{ key: "publications", visible: false },
+		{ key: "languages", visible: false },
+		{ key: "interests", visible: false },
+		{ key: "references", visible: false },
+	],
+	layout: { columns: 1 },
+};
 
 interface PageProps {
 	params: Promise<{ username: string }>;
 }
 
-export async function generateMetadata({
-	params,
-}: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
 	const { username } = await params;
 	const supabase = await createClient();
 
@@ -42,15 +64,14 @@ export async function generateMetadata({
 	};
 }
 
-export default async function PublicResumePage({ params }: PageProps) {
+export default async function UserResumePage({ params }: PageProps) {
 	const { username } = await params;
 	const supabase = await createClient();
 
-	const { data: profile } = await supabase
-		.from("profiles")
-		.select("user_id")
-		.eq("username", username)
-		.single();
+	const [{ data: { user } }, { data: profile }] = await Promise.all([
+		supabase.auth.getUser(),
+		supabase.from("profiles").select("user_id").eq("username", username).single(),
+	]);
 
 	if (!profile) notFound();
 
@@ -62,11 +83,28 @@ export default async function PublicResumePage({ params }: PageProps) {
 
 	if (!resume) notFound();
 
-	const content = resume.content as ResumeContent;
-	const structure = resume.structure as ResumeStructure;
+	const content = (resume.content as ResumeContent) ?? DEFAULT_CONTENT;
+	const structure = (resume.structure as ResumeStructure) ?? DEFAULT_STRUCTURE;
+	const isOwner = !!user && user.id === profile.user_id;
+
+	if (isOwner) {
+		return (
+			<Suspense>
+				<ResumeProvider
+					initialContent={content}
+					initialStructure={structure}
+					resumeId={resume.id as string}
+				>
+					<DashboardShell>
+						<Resume />
+					</DashboardShell>
+				</ResumeProvider>
+			</Suspense>
+		);
+	}
 
 	return (
-		<main className="mx-auto max-w-4xl px-4 py-10">
+		<main className="min-h-screen px-6 py-8 max-w-2xl mx-auto">
 			<PublicResume content={content} structure={structure} />
 		</main>
 	);

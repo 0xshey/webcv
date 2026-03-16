@@ -26,7 +26,7 @@ export function LoginForm() {
   const onSubmit = async (values: LoginFormValues) => {
     setIsLoading(true)
     const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: values.email,
       password: values.password,
     })
@@ -37,7 +37,21 @@ export function LoginForm() {
       return
     }
 
-    router.push('/dashboard')
+    const userId = data.user?.id
+    if (userId) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('user_id', userId)
+        .single()
+      if (profile?.username) {
+        router.push(`/${profile.username}`)
+        router.refresh()
+        return
+      }
+    }
+
+    router.push('/')
     router.refresh()
   }
 

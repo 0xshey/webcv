@@ -62,7 +62,7 @@ export function SignupForm() {
       })
     }
 
-    router.push('/dashboard')
+    router.push(`/${values.username}`)
     router.refresh()
   }
 
