@@ -3,11 +3,13 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { ExternalLink, LogOut, Pencil, Eye } from "lucide-react";
+import { LogOut } from "lucide-react";
 import type { ReactNode } from "react";
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/providers/auth-provider";
 import { useResume } from "@/components/providers/resume-provider";
+import { useSizeMode } from "@/components/providers/size-mode-provider";
+import { Button } from "@/components/ui/button";
+import { SettingsMenu } from "./settings-menu";
 
 const PDFDownloadButton = dynamic(
 	() =>
@@ -26,7 +28,11 @@ export function DashboardShell({
 }) {
 	const { signOut } = useAuth();
 	const { isSaving, isDirty, isEditMode, toggleEditMode } = useResume();
+	const { mode } = useSizeMode();
 	const router = useRouter();
+	const btnSize: "xs" | "sm" = mode === "compact" ? "xs" : "sm";
+	const iconSize: "icon-xs" | "icon-sm" =
+		mode === "compact" ? "icon-xs" : "icon-sm";
 
 	const handleSignOut = async () => {
 		await signOut();
@@ -34,56 +40,58 @@ export function DashboardShell({
 	};
 
 	return (
-		<>
-			<div className="w-full p-8 space-y-2">
-				<header className="w-full max-w-2xl mx-auto flex justify-between items-center p-2 border rounded">
-					<div className="flex items-center gap-3">
-						<span className="font-medium text-sm">webcv</span>
-						{username && (
-							<Button asChild variant={"default"} size={"sm"}>
-								<Link href={`/${username}`} target="_blank">
-									<span>/{username}</span>
-								</Link>
-							</Button>
-						)}
-					</div>
-					<div className="flex items-center gap-2">
-						<span className="text-muted-foreground">
-							{isSaving
-								? "Saving…"
-								: isDirty
-									? "Unsaved"
-									: "Saved"}
-						</span>
+		<div className="min-h-screen px-6 py-8 max-w-2xl mx-auto">
+			<header className="flex items-center justify-between mb-12">
+				{/* Left — identity */}
+				<div className="flex items-center gap-2">
+					<span className="text-muted-foreground/30">webcv</span>
+					{username && (
 						<Button
+							asChild
 							variant="ghost"
-							size="sm"
-							onClick={toggleEditMode}
-							className="gap-1"
+							size={btnSize}
+							className="text-muted-foreground/60 gap-1"
 						>
-							{isEditMode ? (
-								<Eye size={14} />
-							) : (
-								<Pencil size={14} />
-							)}
-							{isEditMode ? "Preview" : "Edit"}
+							<Link href={`/${username}`} target="_blank">
+								/{username}
+							</Link>
 						</Button>
-						<PDFDownloadButton />
-						<Button
-							variant="ghost"
-							size="icon"
-							className="h-8 w-8"
-							onClick={handleSignOut}
-							title="Sign out"
-						>
-							<LogOut size={14} />
-						</Button>
-					</div>
-				</header>
-				<main className="flex-1 border max-w-2xl mx-auto p-4">
-					{children}
-				</main>
-			</div>
-		</>
+					)}
+				</div>
+
+				{/* Right — controls */}
+				<div className="flex items-center gap-2">
+					<span className="text-muted-foreground/40 tabular-nums px-2">
+						{isSaving ? "Saving…" : isDirty ? "Unsaved" : "Saved"}
+					</span>
+
+					<SettingsMenu />
+
+					<Button
+						variant="ghost"
+						size={btnSize}
+						onClick={toggleEditMode}
+						className={
+							isEditMode ? "font-medium" : "text-muted-foreground"
+						}
+					>
+						{isEditMode ? "Done" : "Edit"}
+					</Button>
+
+					<PDFDownloadButton />
+
+					<Button
+						variant="ghost"
+						size={iconSize}
+						onClick={handleSignOut}
+						title="Sign out"
+						className="text-muted-foreground"
+					>
+						<LogOut size={13} />
+					</Button>
+				</div>
+			</header>
+			<main>{children}</main>
+		</div>
 	);
 }

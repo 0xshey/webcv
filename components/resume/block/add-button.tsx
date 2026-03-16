@@ -2,7 +2,6 @@
 
 import { Plus } from 'lucide-react'
 import { v4 as uuid } from 'uuid'
-import { Button } from '@/components/ui/button'
 import { useResume } from '@/components/providers/resume-provider'
 import type { SectionKey } from '@/lib/types'
 
@@ -37,14 +36,13 @@ export function AddBlockButton({ section }: AddBlockButtonProps) {
   }
 
   return (
-    <Button
-      variant="ghost"
-      size="sm"
+    <button
+      type="button"
       onClick={handleAdd}
-      className="gap-1 text-muted-foreground hover:text-foreground"
+      className="flex items-center gap-1 text-xs text-muted-foreground/40 hover:text-muted-foreground transition-colors pl-5 mt-1"
     >
-      <Plus size={14} />
+      <Plus size={11} />
       Add
-    </Button>
+    </button>
   )
 }

@@ -112,7 +112,7 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
@@ -125,8 +125,13 @@
   }
   body {
     @apply bg-background text-foreground;
+    line-height: 1.6;
   }
-  html {
-    @apply font-sans;
+  body {
+    font-size: 0.75rem; /* compact: text-xs */
+    transition: font-size 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  body.cv-size-default {
+    font-size: 0.875rem; /* default: text-sm (shadcn base) */
   }
 }

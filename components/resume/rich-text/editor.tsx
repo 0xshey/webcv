@@ -11,12 +11,7 @@ interface RichTextEditorProps {
   id?: string
 }
 
-export function RichTextEditor({
-  value,
-  onChange,
-  placeholder,
-  id,
-}: RichTextEditorProps) {
+export function RichTextEditor({ value, onChange, placeholder, id }: RichTextEditorProps) {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -35,8 +30,7 @@ export function RichTextEditor({
     editorProps: {
       attributes: {
         id: id ?? '',
-        class:
-          'min-h-[80px] rounded-md border border-border bg-white px-3 py-2 focus:outline-none focus:ring-1 focus:ring-ring',
+        class: 'min-h-[60px] outline-none',
       },
     },
     onUpdate({ editor }) {
@@ -51,9 +45,9 @@ export function RichTextEditor({
   }, [value]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div>
+    <div className="relative">
       {placeholder && !editor?.getText() && (
-        <p className="pointer-events-none absolute text-muted-foreground">
+        <p className="pointer-events-none absolute top-0 text-sm text-muted-foreground/40">
           {placeholder}
         </p>
       )}

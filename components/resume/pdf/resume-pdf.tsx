@@ -40,8 +40,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 8,
     fontWeight: 'bold',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
+    letterSpacing: 0,
     color: '#6b7280',
     marginBottom: 4,
     marginTop: 12,

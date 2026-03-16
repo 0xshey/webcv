@@ -2,8 +2,8 @@
 
 import { PDFDownloadLink } from '@react-pdf/renderer'
 import { Download } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { useResume } from '@/components/providers/resume-provider'
+import { Button } from '@/components/ui/button'
 import { ResumePDF } from './resume-pdf'
 
 export function PDFDownloadButton() {
@@ -16,9 +16,14 @@ export function PDFDownloadButton() {
       fileName={filename}
     >
       {({ loading }) => (
-        <Button variant="outline" size="sm" disabled={loading} className="gap-2">
-          <Download size={14} />
-          {loading ? 'Preparing…' : 'Download PDF'}
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          disabled={loading}
+          title={loading ? 'Preparing PDF…' : 'Download PDF'}
+          className="text-muted-foreground"
+        >
+          <Download size={13} />
         </Button>
       )}
     </PDFDownloadLink>

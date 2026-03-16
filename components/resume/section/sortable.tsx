@@ -73,7 +73,7 @@ export function SortableSection({ section, items }: SortableSectionProps) {
     return (
       <div className="flex flex-col gap-2">
         {items.map((item) => (
-          <div key={item.id} className="rounded-md border border-border bg-white p-2">
+          <div key={item.id} className="text-sm pl-5">
             {getBlockLabel(section, item) || '(untitled)'}
           </div>
         ))}
