@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cp -r /tmp/digitised-cv/. /Users/shey/Developer/apply/digitised-cv/ && ls /Users/shey/Developer/apply/digitised-cv/)",
+      "Bash(npx shadcn@latest init --yes 2>&1)",
+      "Bash(npm install:*)",
+      "Bash(SKIP_ENV_VALIDATION=true node /Users/shey/Developer/apply/digitised-cv/node_modules/next/dist/bin/next build --webpack 2>&1 | tail -40)",
+      "Bash(cat /Users/shey/Developer/apply/digitised-cv/.next/server/app/dashboard/page.js | grep -o \".\\\\{0,30\\\\}su\\\\b.\\\\{0,50\\\\}\" | head -20)",
+      "Bash(cat /Users/shey/.claude/projects/-Users-shey-Developer-apply-digitised-cv/ad4b9920-7243-4ba1-a128-7b0ab8edb830/tool-results/btu13z2aw.txt | grep -oE \".[^a-zA-Z_$]su[^a-zA-Z_$0-9].\" | head -30)",
+      "Bash(sed -i '' 's/text-xs text-red-500/text-red-500/g' /Users/shey/Developer/apply/digitised-cv/components/resume/block-editor.tsx\nsed -i '' 's/ text-sm\"$/\"/' /Users/shey/Developer/apply/digitised-cv/components/resume/sortable-section.tsx\nsed -i '' 's/text-sm focus:/focus:/g; s/text-sm text-\\\\[var\\(--muted-foreground\\)\\\\]/text-[var\\(--muted-foreground\\)]/g' /Users/shey/Developer/apply/digitised-cv/components/resume/rich-text-editor.tsx)",
+      "WebSearch",
+      "WebFetch(domain:ui.shadcn.com)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "supabase"
+  ]
+}

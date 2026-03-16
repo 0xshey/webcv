@@ -16,8 +16,8 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable'
 import { useResume } from '@/components/providers/resume-provider'
-import { SortableBlock } from './sortable-block'
-import { AddBlockButton } from './add-block-button'
+import { SortableBlock } from '../block/sortable'
+import { AddBlockButton } from '../block/add-button'
 import type { SectionKey } from '@/lib/types'
 
 function getBlockLabel(section: Exclude<SectionKey, 'basics'>, item: Record<string, unknown>): string {

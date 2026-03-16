@@ -7,7 +7,7 @@ import { useResume } from '@/components/providers/resume-provider'
 import { basicsSchema } from '@/lib/validations/resume'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { RichTextEditor } from './rich-text-editor'
+import { RichTextEditor } from '../rich-text/editor'
 import type { z } from 'zod'
 
 type BasicsFormValues = z.infer<typeof basicsSchema>

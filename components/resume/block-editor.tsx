@@ -45,7 +45,7 @@ function FieldRow({
     <div className="flex flex-col gap-1">
       <Label htmlFor={htmlFor}>{label}</Label>
       {children}
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      {error && <p className="text-red-500">{error}</p>}
     </div>
   )
 }

@@ -14,7 +14,7 @@ import type {
   ResumeReferenceItem,
   ResumeCertificateItem,
 } from '@/lib/types'
-import { RichTextDisplay } from './rich-text-display'
+import { RichTextDisplay } from './rich-text/display'
 import {
   WorkBlock,
   EducationBlock,
@@ -27,7 +27,7 @@ import {
   InterestBlock,
   ReferenceBlock,
   CertificateBlock,
-} from './block'
+} from './block/view'
 import { Separator } from '@/components/ui/separator'
 
 const SECTION_LABELS: Record<SectionKey, string> = {
@@ -57,11 +57,11 @@ export function PublicResume({ content, structure }: PublicResumeProps) {
     <div className="flex flex-col gap-8">
       {/* Header */}
       <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-bold">{basics.name}</h1>
+        <h1 className="font-semibold">{basics.name}</h1>
         {basics.label && (
-          <p className="text-base text-[var(--muted-foreground)]">{basics.label}</p>
+          <p className="text-base text-muted-foreground">{basics.label}</p>
         )}
-        <div className="flex flex-wrap gap-3 text-sm text-[var(--muted-foreground)]">
+        <div className="flex flex-wrap gap-3 text-muted-foreground">
           {basics.email && <span>{basics.email}</span>}
           {basics.phone && <span>{basics.phone}</span>}
           {basics.url && (
@@ -77,7 +77,7 @@ export function PublicResume({ content, structure }: PublicResumeProps) {
         </div>
         {basics.summary && (
           <div className="mt-2">
-            <RichTextDisplay html={basics.summary} className="text-sm" />
+            <RichTextDisplay html={basics.summary} />
           </div>
         )}
       </div>
@@ -93,7 +93,7 @@ export function PublicResume({ content, structure }: PublicResumeProps) {
           return (
             <div key={s.key} className="flex flex-col gap-4">
               <div className="flex items-center gap-2">
-                <h2 className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
+                <h2 className="font-medium text-muted-foreground">
                   {SECTION_LABELS[s.key]}
                 </h2>
                 <Separator className="flex-1" />

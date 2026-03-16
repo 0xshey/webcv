@@ -7,7 +7,7 @@ import { Trash2, ChevronDown, ChevronUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useResume } from '@/components/providers/resume-provider'
 import { DragHandle } from './drag-handle'
-import { BlockEditor } from './block-editor'
+import { BlockEditor } from './editor'
 import type { SectionKey } from '@/lib/types'
 
 interface SortableBlockProps {

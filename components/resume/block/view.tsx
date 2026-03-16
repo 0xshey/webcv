@@ -11,7 +11,7 @@ import type {
   ResumeReferenceItem,
   ResumeCertificateItem,
 } from '@/lib/types'
-import { RichTextDisplay } from './rich-text-display'
+import { RichTextDisplay } from '../rich-text/display'
 
 export function formatDate(d: string | undefined) {
   if (!d) return 'Present'

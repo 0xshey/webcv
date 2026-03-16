@@ -1,9 +1,9 @@
 'use client'
 
 import { useResume } from '@/components/providers/resume-provider'
-import { SectionHeader } from './section-header'
-import { BasicsEditor } from './basics-editor'
-import { SortableSection } from './sortable-section'
+import { SectionHeader } from './section/header'
+import { BasicsEditor } from './basics/editor'
+import { SortableSection } from './section/sortable'
 import {
   WorkBlock,
   EducationBlock,
@@ -16,8 +16,8 @@ import {
   InterestBlock,
   ReferenceBlock,
   CertificateBlock,
-} from './block'
-import { RichTextDisplay } from './rich-text-display'
+} from './block/view'
+import { RichTextDisplay } from './rich-text/display'
 import type {
   SectionKey,
   ResumeWorkItem,
@@ -38,9 +38,9 @@ function BasicsView() {
   const { basics } = content
   return (
     <div className="flex flex-col gap-1">
-      <h1 className="text-2xl font-bold">{basics.name || 'Your Name'}</h1>
-      {basics.label && <p className="text-sm font-medium text-[var(--muted-foreground)]">{basics.label}</p>}
-      <div className="flex flex-wrap gap-3 text-sm text-[var(--muted-foreground)]">
+      <h1 className="font-semibold">{basics.name || 'Your Name'}</h1>
+      {basics.label && <p className="text-muted-foreground">{basics.label}</p>}
+      <div className="flex flex-wrap gap-3 text-muted-foreground">
         {basics.email && <span>{basics.email}</span>}
         {basics.phone && <span>{basics.phone}</span>}
         {basics.url && (
@@ -51,7 +51,7 @@ function BasicsView() {
       </div>
       {basics.summary && (
         <div className="mt-2">
-          <RichTextDisplay html={basics.summary} className="text-sm" />
+          <RichTextDisplay html={basics.summary} />
         </div>
       )}
     </div>

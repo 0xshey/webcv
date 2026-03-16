@@ -1,0 +1,36 @@
+- Use the App Router (app/) — never mix with Pages Router (pages/) in the same project
+- Co-locate components, hooks, and utils near the route that uses them; only promote to shared when reused 3+ times
+- Name files consistently: page.tsx, layout.tsx, loading.tsx, error.tsx, not-found.tsx per segment
+- Use Route Groups (group)/ for organization without affecting URL paths
+- Default to Server Components; only add "use client" when you need interactivity, browser APIs, or hooks
+- Never import a Client Component into a Server Component without wrapping — push "use client" as deep in the tree as possible
+- Never fetch data in Client Components if a Server Component can do it instead
+- Pass serializable props only across the server/client boundary (no functions, class instances, or Dates as objects)
+- Fetch in Server Components using async/await directly — no useEffect + fetch patterns
+- Use fetch() with Next.js cache options: { cache: 'force-cache' } (static), { next: { revalidate: N } } (ISR), or { cache: 'no-store' } (dynamic)
+- Deduplicate requests with React.cache() for data shared across a render tree
+- Use generateStaticParams for all known dynamic routes to pre-render at build time
+- Use Server Actions for all form submissions and mutations — no dedicated API routes unless building a public API
+- Always validate input server-side (e.g. Zod) even if client validation exists
+- Call revalidatePath() or revalidateTag() after mutations to invalidate stale cache
+- Return typed action results; handle errors explicitly — never swallow them silently
+- Use next/image for all images — never raw <img> tags
+- Use next/font for all fonts — never link Google Fonts via <link> in the head
+- Use next/link for all internal navigation — never <a href>
+- Lazy-load heavy Client Components with dynamic(() => import(...), { ssr: false }) when SSR isn't needed
+- Enable strict mode in tsconfig.json — no exceptions
+- Type all Server Action return values and all fetch responses explicitly
+- Use satisfies over as for type assertions
+- Every dynamic route segment must have an error.tsx boundary
+- Every async Server Component must handle thrown errors or let them bubble to the nearest error.tsx
+- Use notFound() from next/navigation for missing resources — never return null and render nothing
+- Prefix public env vars with NEXT_PUBLIC_ — never expose secrets to the client
+- Validate all env vars at startup with a schema (e.g. @t3-oss/env-nextjs)
+- Never hardcode URLs — use env vars for all external service endpoints
+- Set security headers in next.config.ts (X-Frame-Options, CSP, Referrer-Policy, etc.)
+- Sanitize all user input before rendering — treat dangerouslySetInnerHTML as a last resort requiring explicit review
+- Authenticate in Middleware for protected routes; never rely solely on client-side redirects
+- One component per file, filename matches the exported component name
+- Barrel files (index.ts) are acceptable for lib/utils — avoid for components (breaks tree-shaking)
+- Prefer named exports over default exports in shared modules for easier refactoring
+- Keep next.config.ts minimal and documented — every option should have a comment explaining why it's there
