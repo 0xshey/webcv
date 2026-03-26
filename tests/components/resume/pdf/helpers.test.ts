@@ -9,7 +9,8 @@ vi.mock('@react-pdf/renderer', () => ({
   Link: ({ children }: { children: unknown }) => children,
 }))
 
-import { formatDate, stripHtml, parseLiItems } from '@/components/resume/pdf/resume-pdf'
+import { formatDate } from '@/lib/resume'
+import { stripHtml, parseLiItems } from '@/components/resume/pdf/resume-pdf'
 
 describe('formatDate (pdf helpers)', () => {
   it('returns "Present" for undefined', () => {

@@ -1,6 +1,9 @@
 "use client";
 
+import dynamic from "next/dynamic";
+import { Pencil, Save, Download } from "lucide-react";
 import { useResume } from "@/components/providers/resume-provider";
+import { Button } from "@/components/ui/button";
 import { SectionHeader } from "./section/header";
 import { BasicsEditor } from "./basics/editor";
 import { SortableSection } from "./section/sortable";
@@ -16,6 +19,7 @@ import {
 	InterestBlock,
 	ReferenceBlock,
 	CertificateBlock,
+	LinkCapsule,
 } from "./block/view";
 import { RichTextDisplay } from "./rich-text/display";
 import type {
@@ -33,33 +37,29 @@ import type {
 	ResumeCertificateItem,
 } from "@/lib/types";
 
+const PdfLink = dynamic(
+	() => import("./pdf/pdf-link").then((m) => m.PdfLink),
+	{ ssr: false, loading: () => null },
+);
+
 function BasicsView() {
 	const { content } = useResume();
 	const { basics } = content;
 	return (
-		<div className="flex flex-col gap-1">
-			<h1 className="font-semibold text-[1.1em]">
+		<div className="flex flex-col gap-2">
+			<h1 className="font-semibold text-2xl">
 				{basics.name || "Your Name"}
 			</h1>
 			{basics.label && (
 				<p className="text-muted-foreground">{basics.label}</p>
 			)}
-			<div className="flex flex-wrap gap-3 text-muted-foreground mt-0.5">
+			<div className="flex flex-wrap gap-3 text-muted-foreground mt-1">
 				{basics.email && <span>{basics.email}</span>}
 				{basics.phone && <span>{basics.phone}</span>}
-				{basics.url && (
-					<a
-						href={basics.url}
-						target="_blank"
-						rel="noopener noreferrer"
-						className="hover:underline"
-					>
-						{basics.url.replace(/^https?:\/\//, "")}
-					</a>
-				)}
+				{basics.url && <LinkCapsule href={basics.url} />}
 			</div>
 			{basics.summary && (
-				<div className="mt-2">
+				<div className="mt-4">
 					<RichTextDisplay html={basics.summary} />
 				</div>
 			)}
@@ -85,7 +85,7 @@ function SectionContent({
 	if (items.length === 0) return null;
 
 	return (
-		<div className="flex flex-col gap-3">
+		<div className="flex flex-col gap-5">
 			{sectionKey === "work" &&
 				(items as unknown as ResumeWorkItem[]).map((item) => (
 					<WorkBlock key={item.id} item={item} />
@@ -135,43 +135,68 @@ function SectionContent({
 }
 
 export function Resume() {
-	const { content, structure, isEditMode } = useResume();
-
-	const orderedSections = structure.sections;
+	const { content, structure, isEditMode, isSaving, toggleEditMode, saveAndExit } = useResume();
 
 	return (
 		<div className="flex flex-col gap-8">
-			{/* Basics — always first */}
-			<div className="flex flex-col gap-3">
-				{isEditMode && <SectionHeader sectionKey="basics" visible />}
-				{isEditMode ? <BasicsEditor /> : <BasicsView />}
+			{/* Actions bar */}
+			<div className="flex items-center justify-between">
+				<div>
+					{!isEditMode && (
+						<PdfLink content={content} structure={structure}>
+							{({ loading }) => (
+								<Button variant="secondary" disabled={loading}>
+									<Download />
+									{loading ? "Preparing…" : "Download"}
+								</Button>
+							)}
+						</PdfLink>
+					)}
+				</div>
+
+				<div className="flex items-center gap-4">
+					{isEditMode ? (
+						<Button variant="default" onClick={saveAndExit} disabled={isSaving}>
+							<Save />
+							{isSaving ? "Saving…" : "Save"}
+						</Button>
+					) : (
+						<Button variant="default" onClick={toggleEditMode}>
+							<Pencil />
+							Edit
+						</Button>
+					)}
+				</div>
 			</div>
 
-			{/* Other sections in structure order */}
-			{orderedSections
-				.filter((s) => s.key !== "basics")
-				.map((s) => {
-					const sectionKey = s.key as Exclude<SectionKey, "basics">;
-					const items =
-						(content[sectionKey] as unknown[] | undefined) ?? [];
+			{/* Resume content */}
+			<div className={`flex flex-col ${isEditMode ? "gap-12" : "gap-10"}`}>
+				<div className="flex flex-col gap-3">
+					{isEditMode && <SectionHeader sectionKey="basics" visible />}
+					{isEditMode ? <BasicsEditor /> : <BasicsView />}
+				</div>
 
-					// In view mode, skip invisible or empty sections
-					if (!isEditMode && (!s.visible || items.length === 0))
-						return null;
+				{structure.sections
+					.filter((s) => s.key !== "basics")
+					.map((s) => {
+						const sectionKey = s.key as Exclude<SectionKey, "basics">;
+						const items =
+							(content[sectionKey] as unknown[] | undefined) ?? [];
 
-					return (
-						<div
-							key={s.key}
-							className={`flex flex-col gap-3 ${!s.visible && isEditMode ? "opacity-35" : ""}`}
-						>
-							<SectionHeader
-								sectionKey={s.key}
-								visible={s.visible}
-							/>
-							<SectionContent sectionKey={sectionKey} />
-						</div>
-					);
-				})}
+						if (!isEditMode && (!s.visible || items.length === 0))
+							return null;
+
+						return (
+							<div
+								key={s.key}
+								className={`flex flex-col gap-4 ${!s.visible && isEditMode ? "opacity-35" : ""}`}
+							>
+								<SectionHeader sectionKey={s.key} visible={s.visible} />
+								<SectionContent sectionKey={sectionKey} />
+							</div>
+						);
+					})}
+			</div>
 		</div>
 	);
 }

@@ -83,7 +83,7 @@ export function LoginForm() {
         )}
       </div>
 
-      <Button type="submit" disabled={isLoading} className="mt-2">
+      <Button type="submit" disabled={isLoading}>
         {isLoading ? 'Signing in…' : 'Sign In'}
       </Button>
     </form>

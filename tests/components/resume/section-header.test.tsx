@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { useSearchParams } from 'next/navigation'
-import { SectionHeader } from '@/components/resume/section-header'
+import { SectionHeader } from '@/components/resume/section/header'
 
 const mockDispatch = vi.hoisted(() => vi.fn())
 

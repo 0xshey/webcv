@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { RichTextDisplay } from '@/components/resume/rich-text-display'
+import { RichTextDisplay } from '@/components/resume/rich-text/display'
 
 describe('RichTextDisplay', () => {
   it('renders the container div', () => {

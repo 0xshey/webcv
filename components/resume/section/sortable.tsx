@@ -91,7 +91,6 @@ export function SortableSection({ section, items }: SortableSectionProps) {
               key={item.id}
               id={item.id}
               section={section}
-              label={getBlockLabel(section, item)}
               initialValues={item}
             />
           ))}

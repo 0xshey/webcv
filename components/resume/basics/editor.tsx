@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useResume } from '@/components/providers/resume-provider'
@@ -43,13 +43,18 @@ export function BasicsEditor() {
   })
 
   const values = watch()
+  const isFirstRender = useRef(true)
 
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
     dispatch({ type: 'UPDATE_BASICS', payload: values })
   }, [JSON.stringify(values)]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-2.5">
       {/* Name — matches h1 in view */}
       <BareInput
         id="basics-name"

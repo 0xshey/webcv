@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import { formatDate } from '@/lib/resume'
 import {
-  formatDate,
   WorkBlock,
   EducationBlock,
   SkillBlock,
@@ -13,7 +13,7 @@ import {
   InterestBlock,
   ReferenceBlock,
   CertificateBlock,
-} from '@/components/resume/block'
+} from '@/components/resume/block/view'
 
 describe('formatDate (block helper)', () => {
   it('returns "Present" for undefined', () => {
@@ -42,7 +42,7 @@ describe('WorkBlock', () => {
 
   it('renders a link when url is provided', () => {
     render(<WorkBlock item={{ ...base, url: 'https://acme.com' }} />)
-    expect(screen.getByRole('link', { name: 'Acme Corp' })).toBeInTheDocument()
+    expect(screen.getByRole('link')).toBeInTheDocument()
   })
 
   it('does NOT render a link when url is absent', () => {
@@ -111,9 +111,10 @@ describe('SkillBlock', () => {
 })
 
 describe('ProjectBlock', () => {
-  it('renders project name as link when url provided', () => {
+  it('renders a link when url provided', () => {
     render(<ProjectBlock item={{ id: 'p1', name: 'My App', url: 'https://myapp.com' }} />)
-    expect(screen.getByRole('link', { name: 'My App' })).toBeInTheDocument()
+    expect(screen.getByRole('link')).toBeInTheDocument()
+    expect(screen.getByText('My App')).toBeInTheDocument()
   })
 
   it('renders project name as plain text when no url', () => {
@@ -152,9 +153,10 @@ describe('PublicationBlock', () => {
     expect(screen.getByText('Nature')).toBeInTheDocument()
   })
 
-  it('renders as link when url present', () => {
+  it('renders a link when url present', () => {
     render(<PublicationBlock item={{ id: 'pub1', name: 'My Paper', publisher: 'Nature', releaseDate: '2021-03', url: 'https://nature.com/paper' }} />)
-    expect(screen.getByRole('link', { name: 'My Paper' })).toBeInTheDocument()
+    expect(screen.getByRole('link')).toBeInTheDocument()
+    expect(screen.getByText('My Paper')).toBeInTheDocument()
   })
 })
 
@@ -203,8 +205,9 @@ describe('CertificateBlock', () => {
     expect(screen.queryByText(/2023/)).not.toBeInTheDocument()
   })
 
-  it('renders as link when url present', () => {
+  it('renders a link when url present', () => {
     render(<CertificateBlock item={{ id: 'c1', name: 'AWS Certified', issuer: 'Amazon', url: 'https://aws.com' }} />)
-    expect(screen.getByRole('link', { name: 'AWS Certified' })).toBeInTheDocument()
+    expect(screen.getByRole('link')).toBeInTheDocument()
+    expect(screen.getByText('AWS Certified')).toBeInTheDocument()
   })
 })

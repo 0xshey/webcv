@@ -4,12 +4,10 @@ import {
   createContext,
   useContext,
   useReducer,
-  useEffect,
   useCallback,
   type ReactNode,
 } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useDebouncedCallback } from 'use-debounce'
+import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import type {
@@ -70,6 +68,7 @@ interface ResumeContextValue extends ResumeState {
   dispatch: React.Dispatch<Action>
   isEditMode: boolean
   toggleEditMode: () => void
+  saveAndExit: () => Promise<void>
 }
 
 const ResumeContext = createContext<ResumeContextValue | null>(null)
@@ -205,6 +204,7 @@ export function ResumeProvider({
   resumeId,
 }: ResumeProviderProps) {
   const router = useRouter()
+  const pathname = usePathname()
   const searchParams = useSearchParams()
   const isEditMode = searchParams.get('edit') === 'true'
 
@@ -217,7 +217,7 @@ export function ResumeProvider({
     resumeId,
   })
 
-  const save = useCallback(async () => {
+  const saveAndExit = useCallback(async () => {
     dispatch({ type: 'SET_SAVING' })
     const supabase = createClient()
     const { error } = await supabase
@@ -234,30 +234,27 @@ export function ResumeProvider({
       toast.error('Failed to save resume')
     } else {
       dispatch({ type: 'SET_SAVED' })
+      const params = new URLSearchParams(searchParams.toString())
+      params.delete('edit')
+      const qs = params.toString()
+      router.replace(qs ? `${pathname}?${qs}` : pathname)
     }
-  }, [state.content, state.structure, resumeId])
-
-  const debouncedSave = useDebouncedCallback(save, 500)
-
-  useEffect(() => {
-    if (state.isDirty && isEditMode) {
-      debouncedSave()
-    }
-  }, [state.content, state.structure, state.isDirty, isEditMode, debouncedSave])
+  }, [state.content, state.structure, resumeId, pathname, router, searchParams])
 
   const toggleEditMode = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString())
-    if (isEditMode) {
-      params.delete('edit')
-    } else {
+    if (!isEditMode) {
       params.set('edit', 'true')
+    } else {
+      params.delete('edit')
     }
-    router.replace(`/dashboard?${params.toString()}`)
-  }, [isEditMode, router, searchParams])
+    const qs = params.toString()
+    router.replace(qs ? `${pathname}?${qs}` : pathname)
+  }, [isEditMode, pathname, router, searchParams])
 
   return (
     <ResumeContext.Provider
-      value={{ ...state, dispatch, isEditMode, toggleEditMode }}
+      value={{ ...state, dispatch, isEditMode, toggleEditMode, saveAndExit }}
     >
       {children}
     </ResumeContext.Provider>

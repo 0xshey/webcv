@@ -29,6 +29,7 @@ import {
   CertificateBlock,
 } from './block/view'
 import { Separator } from '@/components/ui/separator'
+import { LinkCapsule } from './block/view'
 
 const SECTION_LABELS: Record<SectionKey, string> = {
   basics: 'Summary',
@@ -54,29 +55,20 @@ export function PublicResume({ content, structure }: PublicResumeProps) {
   const { basics } = content
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-10">
       {/* Header */}
-      <div className="flex flex-col gap-1">
-        <h1 className="font-semibold">{basics.name}</h1>
+      <div className="flex flex-col gap-2">
+        <h1 className="font-semibold text-2xl">{basics.name}</h1>
         {basics.label && (
           <p className="text-base text-muted-foreground">{basics.label}</p>
         )}
         <div className="flex flex-wrap gap-3 text-muted-foreground">
           {basics.email && <span>{basics.email}</span>}
           {basics.phone && <span>{basics.phone}</span>}
-          {basics.url && (
-            <a
-              href={basics.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:underline"
-            >
-              {basics.url.replace(/^https?:\/\//, '')}
-            </a>
-          )}
+          {basics.url && <LinkCapsule href={basics.url} />}
         </div>
         {basics.summary && (
-          <div className="mt-2">
+          <div className="mt-4">
             <RichTextDisplay html={basics.summary} />
           </div>
         )}
@@ -98,7 +90,7 @@ export function PublicResume({ content, structure }: PublicResumeProps) {
                 </h2>
                 <Separator className="flex-1" />
               </div>
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-5">
                 {sectionKey === 'work' &&
                   (items as ResumeWorkItem[]).map((item) => (
                     <WorkBlock key={item.id} item={item} />

@@ -7,6 +7,7 @@ import {
   Link,
 } from '@react-pdf/renderer'
 import type { ResumeContent, ResumeStructure, SectionKey } from '@/lib/types'
+import { formatDate } from '@/lib/resume'
 
 const styles = StyleSheet.create({
   page: {
@@ -83,16 +84,6 @@ const styles = StyleSheet.create({
     lineHeight: 1.4,
   },
 })
-
-export function formatDate(d: string | undefined) {
-  if (!d) return 'Present'
-  const parts = d.split('-')
-  const year = parts[0] ?? ''
-  const month = parts[1]
-  if (!month) return year
-  const date = new Date(Number(year), Number(month) - 1)
-  return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
-}
 
 export function stripHtml(html: string): string {
   return html

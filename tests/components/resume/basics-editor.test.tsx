@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { BasicsEditor } from '@/components/resume/basics-editor'
+import { BasicsEditor } from '@/components/resume/basics/editor'
 
 const mockDispatch = vi.hoisted(() => vi.fn())
 
@@ -19,7 +19,7 @@ vi.mock('@/components/providers/resume-provider', async (importOriginal) => {
   }
 })
 
-vi.mock('@/components/resume/rich-text-editor', () => ({
+vi.mock('@/components/resume/rich-text/editor', () => ({
   RichTextEditor: ({
     value,
     onChange,
@@ -55,10 +55,10 @@ describe('BasicsEditor', () => {
 
   it('renders Full Name, Email, Phone, and Website fields', () => {
     render(<BasicsEditor />)
-    expect(screen.getByLabelText('Full Name')).toBeInTheDocument()
-    expect(screen.getByLabelText('Email')).toBeInTheDocument()
-    expect(screen.getByLabelText('Phone')).toBeInTheDocument()
-    expect(screen.getByLabelText('Website')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Your Name')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('email')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('phone')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('website')).toBeInTheDocument()
   })
 
   it('renders the Summary field via mocked RichTextEditor', () => {
@@ -68,18 +68,18 @@ describe('BasicsEditor', () => {
 
   it('pre-populates name input from context content.basics', () => {
     render(<BasicsEditor />)
-    expect(screen.getByLabelText('Full Name')).toHaveValue('Jane Doe')
+    expect(screen.getByPlaceholderText('Your Name')).toHaveValue('Jane Doe')
   })
 
   it('pre-populates email input from context content.basics', () => {
     render(<BasicsEditor />)
-    expect(screen.getByLabelText('Email')).toHaveValue('jane@example.com')
+    expect(screen.getByPlaceholderText('email')).toHaveValue('jane@example.com')
   })
 
   it('dispatches UPDATE_BASICS when the name field value changes', async () => {
     const user = userEvent.setup()
     render(<BasicsEditor />)
-    const nameInput = screen.getByLabelText('Full Name')
+    const nameInput = screen.getByPlaceholderText('Your Name')
     await user.clear(nameInput)
     await user.type(nameInput, 'John Smith')
     await waitFor(() => {
@@ -92,7 +92,7 @@ describe('BasicsEditor', () => {
   it('dispatches UPDATE_BASICS when the email field value changes', async () => {
     const user = userEvent.setup()
     render(<BasicsEditor />)
-    const emailInput = screen.getByLabelText('Email')
+    const emailInput = screen.getByPlaceholderText('email')
     await user.clear(emailInput)
     await user.type(emailInput, 'new@example.com')
     await waitFor(() => {
@@ -105,7 +105,7 @@ describe('BasicsEditor', () => {
   it('dispatches UPDATE_BASICS with empty name when name field is cleared', async () => {
     const user = userEvent.setup()
     render(<BasicsEditor />)
-    const nameInput = screen.getByLabelText('Full Name')
+    const nameInput = screen.getByPlaceholderText('Your Name')
     await user.clear(nameInput)
     await waitFor(() => {
       expect(mockDispatch).toHaveBeenCalledWith(

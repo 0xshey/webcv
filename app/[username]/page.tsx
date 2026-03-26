@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { ResumeProvider } from "@/components/providers/resume-provider";
-import { DashboardShell } from "@/components/dashboard/dashboard-shell";
+import { Navigator } from "@/components/dashboard/navigator";
 import { Resume } from "@/components/resume/resume";
 import { PublicResume } from "@/components/resume/public-resume";
 import type { ResumeContent, ResumeStructure } from "@/lib/types";
@@ -95,17 +95,12 @@ export default async function UserResumePage({ params }: PageProps) {
 					initialStructure={structure}
 					resumeId={resume.id as string}
 				>
-					<DashboardShell>
-						<Resume />
-					</DashboardShell>
+					<Navigator />
+					<Resume />
 				</ResumeProvider>
 			</Suspense>
 		);
 	}
 
-	return (
-		<main className="min-h-screen px-6 py-8 max-w-2xl mx-auto">
-			<PublicResume content={content} structure={structure} />
-		</main>
-	);
+	return <PublicResume content={content} structure={structure} />;
 }

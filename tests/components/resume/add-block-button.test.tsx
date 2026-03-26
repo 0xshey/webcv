@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { AddBlockButton } from '@/components/resume/add-block-button'
+import { AddBlockButton } from '@/components/resume/block/add-button'
 
 const mockDispatch = vi.hoisted(() => vi.fn())
 

@@ -108,7 +108,7 @@ export function SignupForm() {
         )}
       </div>
 
-      <Button type="submit" disabled={isLoading} className="mt-2">
+      <Button type="submit" disabled={isLoading}>
         {isLoading ? 'Creating account…' : 'Create Account'}
       </Button>
     </form>

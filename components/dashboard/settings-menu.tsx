@@ -2,34 +2,12 @@
 
 import { useState, useRef, useCallback, useSyncExternalStore } from 'react'
 import { createPortal } from 'react-dom'
+import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
-import { SlidersHorizontal } from 'lucide-react'
+import { Ellipsis, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useAuth } from '@/components/providers/auth-provider'
 import { useSizeMode } from '@/components/providers/size-mode-provider'
-
-function OptionButton({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean
-  onClick: () => void
-  children: React.ReactNode
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={
-        active
-          ? 'font-medium text-foreground transition-colors'
-          : 'text-muted-foreground/40 hover:text-muted-foreground transition-colors'
-      }
-    >
-      {children}
-    </button>
-  )
-}
 
 export function SettingsMenu() {
   const [open, setOpen] = useState(false)
@@ -37,8 +15,9 @@ export function SettingsMenu() {
   const triggerRef = useRef<HTMLButtonElement>(null)
   const { theme, setTheme } = useTheme()
   const { mode, setMode } = useSizeMode()
+  const { signOut } = useAuth()
+  const router = useRouter()
 
-  // Client-only flag — no setState in effect, no hydration mismatch
   const mounted = useSyncExternalStore(
     () => () => {},
     () => true,
@@ -58,37 +37,54 @@ export function SettingsMenu() {
 
   const closeMenu = useCallback(() => setOpen(false), [])
 
+  const handleSignOut = async () => {
+    closeMenu()
+    await signOut()
+    router.push('/')
+  }
+
   const menu = open && (
     <>
-      {/* Full-page dim backdrop */}
       <div
-        className="fixed inset-0 z-40 bg-background/70 animate-in fade-in duration-150"
+        className="fixed inset-0 z-40 backdrop-blur-sm bg-background/50 animate-in fade-in duration-150"
         onClick={closeMenu}
       />
 
-      {/* Floating options — no background, just text in front of dim */}
       <div
         className="fixed z-50 flex flex-col gap-3 animate-in fade-in slide-in-from-top-1 duration-150"
         style={{ top: pos.top, right: pos.right }}
       >
-        {/* Theme row */}
-        <div className="flex items-center gap-3">
-          <span className="text-muted-foreground/40 w-8">Theme</span>
-          <div className="flex items-center gap-2.5">
-            <OptionButton active={theme === 'light'} onClick={() => setTheme('light')}>Light</OptionButton>
-            <OptionButton active={theme === 'dark'} onClick={() => setTheme('dark')}>Dark</OptionButton>
-            <OptionButton active={theme === 'system'} onClick={() => setTheme('system')}>System</OptionButton>
-          </div>
+        {/* Theme */}
+        <div className="flex items-center gap-1">
+          {(['light', 'dark', 'system'] as const).map((t) => (
+            <Button
+              key={t}
+              variant={theme === t ? 'secondary' : 'ghost'}
+              onClick={() => setTheme(t)}
+            >
+              {t.charAt(0).toUpperCase() + t.slice(1)}
+            </Button>
+          ))}
         </div>
 
-        {/* Text size row */}
-        <div className="flex items-center gap-3">
-          <span className="text-muted-foreground/40 w-8">Text</span>
-          <div className="flex items-center gap-2.5">
-            <OptionButton active={mode === 'compact'} onClick={() => setMode('compact')}>Small</OptionButton>
-            <OptionButton active={mode === 'default'} onClick={() => setMode('default')}>Large</OptionButton>
-          </div>
+        {/* Size */}
+        <div className="flex items-center gap-1">
+          {(['compact', 'default'] as const).map((m) => (
+            <Button
+              key={m}
+              variant={mode === m ? 'secondary' : 'ghost'}
+              onClick={() => setMode(m)}
+            >
+              {m === 'compact' ? 'Small' : 'Large'}
+            </Button>
+          ))}
         </div>
+
+        {/* Sign out */}
+        <Button variant="ghost" onClick={handleSignOut} className="justify-start">
+          <LogOut />
+          Sign out
+        </Button>
       </div>
     </>
   )
@@ -98,12 +94,10 @@ export function SettingsMenu() {
       <Button
         ref={triggerRef}
         variant="ghost"
-        size="icon-sm"
         onClick={open ? closeMenu : openMenu}
-        title="Settings"
-        className="text-muted-foreground"
+        title="More"
       >
-        <SlidersHorizontal size={13} />
+        <Ellipsis />
       </Button>
 
       {mounted && createPortal(menu, document.body)}
