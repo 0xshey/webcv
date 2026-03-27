@@ -109,7 +109,7 @@ export function SkillBlock({ item }: { item: ResumeSkillItem }) {
 			: [];
 
 	return (
-		<div className="flex flex-col gap-2 pl-2">
+		<div className="flex flex-col gap-2">
 			<div className="flex items-center gap-2">
 				<span className="">{item.name}</span>
 				{item.level && (
@@ -165,7 +165,7 @@ export function AwardBlock({ item }: { item: ResumeAwardItem }) {
 				<p className="">{item.title}</p>
 				<ShortDate date={item.date} />
 			</div>
-			<p className="text-muted-foreground pl-2">{item.awarder}</p>
+			<p className="text-muted-foreground">{item.awarder}</p>
 			{item.summary && <p className="pl-2">{item.summary}</p>}
 		</div>
 	);
@@ -181,7 +181,7 @@ export function PublicationBlock({ item }: { item: ResumePublicationItem }) {
 				</div>
 				<ShortDate date={item.releaseDate} />
 			</div>
-			<p className="text-muted-foreground pl-2">{item.publisher}</p>
+			<p className="text-muted-foreground">{item.publisher}</p>
 			{item.summary && <p className="pl-2">{item.summary}</p>}
 		</div>
 	);
@@ -189,7 +189,7 @@ export function PublicationBlock({ item }: { item: ResumePublicationItem }) {
 
 export function LanguageBlock({ item }: { item: ResumeLanguageItem }) {
 	return (
-		<div className="flex items-center gap-2 pl-2">
+		<div className="flex items-center gap-2">
 			<span className="">{item.language}</span>
 			<span className="text-muted-foreground">· {item.fluency}</span>
 		</div>
@@ -207,7 +207,7 @@ export function InterestBlock({ item }: { item: ResumeInterestItem }) {
 			: [];
 
 	return (
-		<div className="flex flex-col gap-1 pl-2">
+		<div className="flex flex-col gap-1">
 			<span className="">{item.name}</span>
 			{keywords.length > 0 && (
 				<p className="text-muted-foreground">{keywords.join(", ")}</p>
@@ -218,7 +218,7 @@ export function InterestBlock({ item }: { item: ResumeInterestItem }) {
 
 export function ReferenceBlock({ item }: { item: ResumeReferenceItem }) {
 	return (
-		<div className="flex flex-col gap-2 pl-2">
+		<div className="flex flex-col gap-2">
 			<p className="">{item.name}</p>
 			<p>{item.reference}</p>
 		</div>
@@ -235,7 +235,7 @@ export function CertificateBlock({ item }: { item: ResumeCertificateItem }) {
 				</div>
 				<ShortDate date={item.date} />
 			</div>
-			<p className="text-muted-foreground pl-2">{item.issuer}</p>
+			<p className="text-muted-foreground">{item.issuer}</p>
 		</div>
 	);
 }
