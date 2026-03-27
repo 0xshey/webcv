@@ -1,5 +1,5 @@
 import { Globe } from "lucide-react";
-import { formatDate } from "@/lib/resume";
+import { formatDate, formatDateShort } from "@/lib/resume";
 import type {
 	ResumeWorkItem,
 	ResumeEducationItem,
@@ -35,9 +35,27 @@ export function LinkCapsule({ href }: { href: string }) {
 
 function DateRange({ start, end }: { start?: string; end?: string }) {
 	if (!start && !end) return null;
+	const endLabel = end ? formatDate(end) : "Present";
+	const endShortLabel = end ? formatDateShort(end) : "Present";
 	return (
-		<span className="text-muted-foreground text-sm">
-			{formatDate(start)} – {end ? formatDate(end) : "Present"}
+		<span className="text-muted-foreground text-sm shrink-0">
+			{/* Mobile: stacked short format */}
+			<span className="flex flex-col items-end sm:hidden">
+				<span>{formatDateShort(start)}</span>
+				<span>– {endShortLabel}</span>
+			</span>
+			{/* Desktop: inline long format */}
+			<span className="hidden sm:inline">{formatDate(start)} – {endLabel}</span>
+		</span>
+	);
+}
+
+function ShortDate({ date }: { date?: string }) {
+	if (!date) return null;
+	return (
+		<span className="text-muted-foreground text-sm shrink-0">
+			<span className="sm:hidden">{formatDateShort(date)}</span>
+			<span className="hidden sm:inline">{formatDate(date)}</span>
 		</span>
 	);
 }
@@ -45,8 +63,8 @@ function DateRange({ start, end }: { start?: string; end?: string }) {
 export function WorkBlock({ item }: { item: ResumeWorkItem }) {
 	return (
 		<div className="flex flex-col gap-2">
-			<div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-2">
-				<div className="flex flex-col gap-1 pl-2">
+			<div className="flex items-start justify-between gap-2">
+				<div className="flex flex-col gap-1">
 					<p className="">{item.position}</p>
 					<div className="flex items-center gap-2 flex-wrap">
 						<p className="text-muted-foreground">{item.name}</p>
@@ -63,8 +81,8 @@ export function WorkBlock({ item }: { item: ResumeWorkItem }) {
 export function EducationBlock({ item }: { item: ResumeEducationItem }) {
 	return (
 		<div className="flex flex-col gap-2">
-			<div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-2">
-				<div className="flex flex-col gap-1 pl-2">
+			<div className="flex items-start justify-between gap-2">
+				<div className="flex flex-col gap-1">
 					<p className="">{item.studyType} in {item.area}</p>
 					<div className="flex items-center gap-2 flex-wrap">
 						<p className="text-muted-foreground">{item.institution}</p>
@@ -108,8 +126,8 @@ export function SkillBlock({ item }: { item: ResumeSkillItem }) {
 export function ProjectBlock({ item }: { item: ResumeProjectItem }) {
 	return (
 		<div className="flex flex-col gap-2">
-			<div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-2">
-				<div className="flex items-center gap-2 flex-wrap pl-2">
+			<div className="flex items-start justify-between gap-2">
+				<div className="flex items-center gap-2 flex-wrap">
 					<p className="">{item.name}</p>
 					{item.url && <LinkCapsule href={item.url} />}
 				</div>
@@ -125,8 +143,8 @@ export function ProjectBlock({ item }: { item: ResumeProjectItem }) {
 export function VolunteerBlock({ item }: { item: ResumeVolunteerItem }) {
 	return (
 		<div className="flex flex-col gap-2">
-			<div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-2">
-				<div className="flex flex-col gap-1 pl-2">
+			<div className="flex items-start justify-between gap-2">
+				<div className="flex flex-col gap-1">
 					<p className="">{item.position}</p>
 					<div className="flex items-center gap-2 flex-wrap">
 						<p className="text-muted-foreground">{item.organization}</p>
@@ -143,9 +161,9 @@ export function VolunteerBlock({ item }: { item: ResumeVolunteerItem }) {
 export function AwardBlock({ item }: { item: ResumeAwardItem }) {
 	return (
 		<div className="flex flex-col gap-2">
-			<div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-2">
-				<p className="pl-2">{item.title}</p>
-				{item.date && <span className="text-muted-foreground text-sm">{formatDate(item.date)}</span>}
+			<div className="flex items-start justify-between gap-2">
+				<p className="">{item.title}</p>
+				<ShortDate date={item.date} />
 			</div>
 			<p className="text-muted-foreground pl-2">{item.awarder}</p>
 			{item.summary && <p className="pl-2">{item.summary}</p>}
@@ -156,12 +174,12 @@ export function AwardBlock({ item }: { item: ResumeAwardItem }) {
 export function PublicationBlock({ item }: { item: ResumePublicationItem }) {
 	return (
 		<div className="flex flex-col gap-2">
-			<div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-2">
-				<div className="flex items-center gap-2 flex-wrap pl-2">
+			<div className="flex items-start justify-between gap-2">
+				<div className="flex items-center gap-2 flex-wrap">
 					<p className="">{item.name}</p>
 					{item.url && <LinkCapsule href={item.url} />}
 				</div>
-				{item.releaseDate && <span className="text-muted-foreground text-sm">{formatDate(item.releaseDate)}</span>}
+				<ShortDate date={item.releaseDate} />
 			</div>
 			<p className="text-muted-foreground pl-2">{item.publisher}</p>
 			{item.summary && <p className="pl-2">{item.summary}</p>}
@@ -210,12 +228,12 @@ export function ReferenceBlock({ item }: { item: ResumeReferenceItem }) {
 export function CertificateBlock({ item }: { item: ResumeCertificateItem }) {
 	return (
 		<div className="flex flex-col gap-2">
-			<div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-2">
-				<div className="flex items-center gap-2 flex-wrap pl-2">
+			<div className="flex items-start justify-between gap-2">
+				<div className="flex items-center gap-2 flex-wrap">
 					<p className="">{item.name}</p>
 					{item.url && <LinkCapsule href={item.url} />}
 				</div>
-				{item.date && <span className="text-muted-foreground text-sm">{formatDate(item.date)}</span>}
+				<ShortDate date={item.date} />
 			</div>
 			<p className="text-muted-foreground pl-2">{item.issuer}</p>
 		</div>
