@@ -109,13 +109,6 @@ function WorkEditor({
 	return (
 		<div className="flex flex-col gap-3">
 			<FieldRow
-				label="Company"
-				htmlFor={`${blockId}-name`}
-				error={errors.name?.message}
-			>
-				<BareInput id={`${blockId}-name`} {...register("name")} />
-			</FieldRow>
-			<FieldRow
 				label="Position"
 				htmlFor={`${blockId}-position`}
 				error={errors.position?.message}
@@ -124,6 +117,13 @@ function WorkEditor({
 					id={`${blockId}-position`}
 					{...register("position")}
 				/>
+			</FieldRow>
+			<FieldRow
+				label="Company"
+				htmlFor={`${blockId}-name`}
+				error={errors.name?.message}
+			>
+				<BareInput id={`${blockId}-name`} {...register("name")} />
 			</FieldRow>
 			<FieldRow
 				label="Website"
@@ -211,16 +211,6 @@ function EducationEditor({
 	return (
 		<div className="flex flex-col gap-3">
 			<FieldRow
-				label="Institution"
-				htmlFor={`${blockId}-inst`}
-				error={errors.institution?.message}
-			>
-				<BareInput
-					id={`${blockId}-inst`}
-					{...register("institution")}
-				/>
-			</FieldRow>
-			<FieldRow
 				label="Degree"
 				htmlFor={`${blockId}-type`}
 				error={errors.studyType?.message}
@@ -237,6 +227,16 @@ function EducationEditor({
 				error={errors.area?.message}
 			>
 				<BareInput id={`${blockId}-area`} {...register("area")} />
+			</FieldRow>
+			<FieldRow
+				label="Institution"
+				htmlFor={`${blockId}-inst`}
+				error={errors.institution?.message}
+			>
+				<BareInput
+					id={`${blockId}-inst`}
+					{...register("institution")}
+				/>
 			</FieldRow>
 			<div className="grid grid-cols-2 gap-3">
 				<FieldRow
@@ -465,6 +465,13 @@ function VolunteerEditor({
 	return (
 		<div className="flex flex-col gap-3">
 			<FieldRow
+				label="Position"
+				htmlFor={`${blockId}-pos`}
+				error={errors.position?.message}
+			>
+				<BareInput id={`${blockId}-pos`} {...register("position")} />
+			</FieldRow>
+			<FieldRow
 				label="Organization"
 				htmlFor={`${blockId}-org`}
 				error={errors.organization?.message}
@@ -473,13 +480,6 @@ function VolunteerEditor({
 					id={`${blockId}-org`}
 					{...register("organization")}
 				/>
-			</FieldRow>
-			<FieldRow
-				label="Position"
-				htmlFor={`${blockId}-pos`}
-				error={errors.position?.message}
-			>
-				<BareInput id={`${blockId}-pos`} {...register("position")} />
 			</FieldRow>
 			<FieldRow
 				label="URL"
