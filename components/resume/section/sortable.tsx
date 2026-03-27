@@ -45,6 +45,7 @@ interface SortableSectionProps {
 export function SortableSection({ section, items }: SortableSectionProps) {
   const { dispatch } = useResume()
   const [mounted, setMounted] = useState(false)
+  const [newItemId, setNewItemId] = useState<string | null>(null)
 
   useEffect(() => setMounted(true), [])
 
@@ -92,9 +93,10 @@ export function SortableSection({ section, items }: SortableSectionProps) {
               id={item.id}
               section={section}
               initialValues={item}
+              defaultExpanded={item.id === newItemId}
             />
           ))}
-          <AddBlockButton section={section} />
+          <AddBlockButton section={section} onAdd={setNewItemId} />
         </div>
       </SortableContext>
     </DndContext>

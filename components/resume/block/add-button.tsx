@@ -22,18 +22,21 @@ const defaultItems: Record<Exclude<SectionKey, 'basics'>, Record<string, unknown
 
 interface AddBlockButtonProps {
   section: Exclude<SectionKey, 'basics'>
+  onAdd?: (id: string) => void
 }
 
-export function AddBlockButton({ section }: AddBlockButtonProps) {
+export function AddBlockButton({ section, onAdd }: AddBlockButtonProps) {
   const { dispatch } = useResume()
 
   const handleAdd = () => {
-    const item = { id: uuid(), ...defaultItems[section] }
+    const id = uuid()
+    const item = { id, ...defaultItems[section] }
     dispatch({
       type: 'ADD_BLOCK',
       section,
       item: item as Parameters<typeof dispatch>[0] extends { item: infer I } ? I : never,
     })
+    onAdd?.(id)
   }
 
   return (

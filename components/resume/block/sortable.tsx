@@ -63,13 +63,22 @@ interface SortableBlockProps {
   id: string
   section: Exclude<SectionKey, 'basics'>
   initialValues: Record<string, unknown>
+  defaultExpanded?: boolean
 }
 
-export function SortableBlock({ id, section, initialValues }: SortableBlockProps) {
+export function SortableBlock({ id, section, initialValues, defaultExpanded = false }: SortableBlockProps) {
   const { content, dispatch } = useResume()
-  const [expanded, setExpanded] = useState(false)
+  const [expanded, setExpanded] = useState(defaultExpanded)
   const didDragRef = useRef(false)
   const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!defaultExpanded) return
+    const timer = setTimeout(() => {
+      containerRef.current?.querySelector<HTMLElement>('input, textarea')?.focus()
+    }, 150)
+    return () => clearTimeout(timer)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!expanded) return
