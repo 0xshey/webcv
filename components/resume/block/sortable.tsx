@@ -73,13 +73,17 @@ export function SortableBlock({ id, section, initialValues }: SortableBlockProps
 
   useEffect(() => {
     if (!expanded) return
-    const handleClickOutside = (e: MouseEvent) => {
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setExpanded(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
+    document.addEventListener('touchstart', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
+    }
   }, [expanded])
 
   const liveItem =
@@ -152,7 +156,7 @@ export function SortableBlock({ id, section, initialValues }: SortableBlockProps
 
         <Button
           variant="ghost"
-          className="mt-0.5 opacity-0 group-hover/block:opacity-100 transition-opacity flex-shrink-0"
+          className="mt-0.5 flex-shrink-0"
           onClick={(e) => { e.stopPropagation(); dispatch({ type: 'DELETE_BLOCK', section, id }) }}
           aria-label="Delete"
         >

@@ -29,12 +29,12 @@ export function SectionHeader({ sectionKey, visible }: SectionHeaderProps) {
 	const { dispatch, isEditMode } = useResume();
 
 	return (
-		<div className="flex items-center gap-2 group/header">
+		<div className="flex items-center gap-2">
 			<h2 className="font-medium">{SECTION_LABELS[sectionKey]}</h2>
 			{isEditMode && sectionKey !== "basics" && (
 				<Button
 					variant="ghost"
-					className="opacity-0 group-hover/header:opacity-100 transition-opacity"
+					className=""
 					onClick={() =>
 						dispatch({ type: "TOGGLE_SECTION", key: sectionKey })
 					}
