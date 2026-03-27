@@ -98,9 +98,8 @@ export function SortableBlock({ id, section, initialValues }: SortableBlockProps
     <div ref={containerRef}>
     <div ref={setNodeRef} style={style} className="group/block">
       <div
-        className={`flex items-start gap-1.5 transition-all duration-200 ease-in-out ${
-          expanded ? 'bg-muted/60 rounded-lg p-3' : 'p-0'
-        }`}
+        className={`flex items-start gap-1.5 transition-all duration-200 ease-in-out bg-muted/60 rounded-lg p-3 ${!expanded ? 'cursor-pointer' : ''}`}
+        onClick={() => { if (!expanded) setExpanded(true) }}
       >
         {/* Grip — also acts as click-to-collapse when expanded */}
         <button
@@ -111,7 +110,7 @@ export function SortableBlock({ id, section, initialValues }: SortableBlockProps
           aria-label={expanded ? 'Collapse' : 'Drag to reorder'}
           onMouseDown={() => { didDragRef.current = false }}
           onMouseMove={() => { didDragRef.current = true }}
-          onClick={() => { if (!didDragRef.current) setExpanded((v) => !v) }}
+          onClick={(e) => { e.stopPropagation(); if (!didDragRef.current) setExpanded((v) => !v) }}
           className={`mt-0.5 flex-shrink-0 touch-none transition-colors ${
             expanded
               ? 'cursor-pointer text-muted-foreground/50'
@@ -131,16 +130,8 @@ export function SortableBlock({ id, section, initialValues }: SortableBlockProps
             }}
           >
             <div className="overflow-hidden min-h-0">
-              <div
-                role="button"
-                tabIndex={0}
-                className="w-full cursor-pointer"
-                onClick={() => setExpanded(true)}
-                onKeyDown={(e) => e.key === 'Enter' && setExpanded(true)}
-              >
-                <div className="pointer-events-none">
-                  <BlockPreview section={section} item={liveItem} />
-                </div>
+              <div className="pointer-events-none">
+                <BlockPreview section={section} item={liveItem} />
               </div>
             </div>
           </div>
@@ -162,7 +153,7 @@ export function SortableBlock({ id, section, initialValues }: SortableBlockProps
         <Button
           variant="ghost"
           className="mt-0.5 opacity-0 group-hover/block:opacity-100 transition-opacity flex-shrink-0"
-          onClick={() => dispatch({ type: 'DELETE_BLOCK', section, id })}
+          onClick={(e) => { e.stopPropagation(); dispatch({ type: 'DELETE_BLOCK', section, id }) }}
           aria-label="Delete"
         >
           <Trash2 size={12} />
