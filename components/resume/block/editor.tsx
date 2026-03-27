@@ -64,14 +64,13 @@ function FieldRow({
 }) {
 	return (
 		<div className="flex flex-col gap-0.5">
-			<label
-				htmlFor={htmlFor}
-				className="text-muted-foreground/60"
-			>
+			<label htmlFor={htmlFor} className="text-muted-foreground/60">
 				{label}
 			</label>
 			{children}
-			{error && <p className="text-xs text-destructive mt-0.5">{error}</p>}
+			{error && (
+				<p className="text-xs text-destructive mt-0.5">{error}</p>
+			)}
 		</div>
 	);
 }
@@ -109,21 +108,56 @@ function WorkEditor({
 
 	return (
 		<div className="flex flex-col gap-3">
-			<FieldRow label="Company" htmlFor={`${blockId}-name`} error={errors.name?.message}>
+			<FieldRow
+				label="Company"
+				htmlFor={`${blockId}-name`}
+				error={errors.name?.message}
+			>
 				<BareInput id={`${blockId}-name`} {...register("name")} />
 			</FieldRow>
-			<FieldRow label="Position" htmlFor={`${blockId}-position`} error={errors.position?.message}>
-				<BareInput id={`${blockId}-position`} {...register("position")} />
+			<FieldRow
+				label="Position"
+				htmlFor={`${blockId}-position`}
+				error={errors.position?.message}
+			>
+				<BareInput
+					id={`${blockId}-position`}
+					{...register("position")}
+				/>
 			</FieldRow>
-			<FieldRow label="Website" htmlFor={`${blockId}-url`} error={errors.url?.message}>
-				<BareInput id={`${blockId}-url`} type="url" {...register("url")} />
+			<FieldRow
+				label="Website"
+				htmlFor={`${blockId}-url`}
+				error={errors.url?.message}
+			>
+				<BareInput
+					id={`${blockId}-url`}
+					type="url"
+					{...register("url")}
+				/>
 			</FieldRow>
 			<div className="grid grid-cols-2 gap-3">
-				<FieldRow label="Start Date" htmlFor={`${blockId}-start`} error={errors.startDate?.message}>
-					<BareInput id={`${blockId}-start`} placeholder="YYYY-MM" {...register("startDate")} />
+				<FieldRow
+					label="Start Date"
+					htmlFor={`${blockId}-start`}
+					error={errors.startDate?.message}
+				>
+					<BareInput
+						id={`${blockId}-start`}
+						placeholder="YYYY-MM"
+						{...register("startDate")}
+					/>
 				</FieldRow>
-				<FieldRow label="End Date" htmlFor={`${blockId}-end`} error={errors.endDate?.message}>
-					<BareInput id={`${blockId}-end`} placeholder="YYYY-MM or blank" {...register("endDate")} />
+				<FieldRow
+					label="End Date"
+					htmlFor={`${blockId}-end`}
+					error={errors.endDate?.message}
+				>
+					<BareInput
+						id={`${blockId}-end`}
+						placeholder="YYYY-MM or blank"
+						{...register("endDate")}
+					/>
 				</FieldRow>
 			</div>
 			<FieldRow label="Summary" htmlFor={`${blockId}-summary`}>
@@ -176,24 +210,63 @@ function EducationEditor({
 
 	return (
 		<div className="flex flex-col gap-3">
-			<FieldRow label="Institution" htmlFor={`${blockId}-inst`} error={errors.institution?.message}>
-				<BareInput id={`${blockId}-inst`} {...register("institution")} />
+			<FieldRow
+				label="Institution"
+				htmlFor={`${blockId}-inst`}
+				error={errors.institution?.message}
+			>
+				<BareInput
+					id={`${blockId}-inst`}
+					{...register("institution")}
+				/>
 			</FieldRow>
-			<FieldRow label="Degree" htmlFor={`${blockId}-type`} error={errors.studyType?.message}>
-				<BareInput id={`${blockId}-type`} placeholder="e.g. Bachelor" {...register("studyType")} />
+			<FieldRow
+				label="Degree"
+				htmlFor={`${blockId}-type`}
+				error={errors.studyType?.message}
+			>
+				<BareInput
+					id={`${blockId}-type`}
+					placeholder="e.g. Bachelor"
+					{...register("studyType")}
+				/>
 			</FieldRow>
-			<FieldRow label="Field of Study" htmlFor={`${blockId}-area`} error={errors.area?.message}>
+			<FieldRow
+				label="Field of Study"
+				htmlFor={`${blockId}-area`}
+				error={errors.area?.message}
+			>
 				<BareInput id={`${blockId}-area`} {...register("area")} />
 			</FieldRow>
 			<div className="grid grid-cols-2 gap-3">
-				<FieldRow label="Start Date" htmlFor={`${blockId}-start`} error={errors.startDate?.message}>
-					<BareInput id={`${blockId}-start`} placeholder="YYYY-MM" {...register("startDate")} />
+				<FieldRow
+					label="Start Date"
+					htmlFor={`${blockId}-start`}
+					error={errors.startDate?.message}
+				>
+					<BareInput
+						id={`${blockId}-start`}
+						placeholder="YYYY-MM"
+						{...register("startDate")}
+					/>
 				</FieldRow>
-				<FieldRow label="End Date" htmlFor={`${blockId}-end`} error={errors.endDate?.message}>
-					<BareInput id={`${blockId}-end`} placeholder="YYYY-MM or blank" {...register("endDate")} />
+				<FieldRow
+					label="End Date"
+					htmlFor={`${blockId}-end`}
+					error={errors.endDate?.message}
+				>
+					<BareInput
+						id={`${blockId}-end`}
+						placeholder="YYYY-MM or blank"
+						{...register("endDate")}
+					/>
 				</FieldRow>
 			</div>
-			<FieldRow label="GPA / Score" htmlFor={`${blockId}-score`} error={errors.score?.message}>
+			<FieldRow
+				label="GPA / Score"
+				htmlFor={`${blockId}-score`}
+				error={errors.score?.message}
+			>
 				<BareInput id={`${blockId}-score`} {...register("score")} />
 			</FieldRow>
 		</div>
@@ -232,14 +305,34 @@ function SkillEditor({
 
 	return (
 		<div className="flex flex-col gap-3">
-			<FieldRow label="Skill" htmlFor={`${blockId}-name`} error={errors.name?.message}>
+			<FieldRow
+				label="Skill"
+				htmlFor={`${blockId}-name`}
+				error={errors.name?.message}
+			>
 				<BareInput id={`${blockId}-name`} {...register("name")} />
 			</FieldRow>
-			<FieldRow label="Level" htmlFor={`${blockId}-level`} error={errors.level?.message}>
-				<BareInput id={`${blockId}-level`} placeholder="e.g. Expert, Intermediate" {...register("level")} />
+			<FieldRow
+				label="Level"
+				htmlFor={`${blockId}-level`}
+				error={errors.level?.message}
+			>
+				<BareInput
+					id={`${blockId}-level`}
+					placeholder="e.g. Expert, Intermediate"
+					{...register("level")}
+				/>
 			</FieldRow>
-			<FieldRow label="Keywords" htmlFor={`${blockId}-keywords`} error={errors.keywords?.message}>
-				<BareInput id={`${blockId}-keywords`} placeholder="Comma-separated" {...register("keywords")} />
+			<FieldRow
+				label="Keywords"
+				htmlFor={`${blockId}-keywords`}
+				error={errors.keywords?.message}
+			>
+				<BareInput
+					id={`${blockId}-keywords`}
+					placeholder="Comma-separated"
+					{...register("keywords")}
+				/>
 			</FieldRow>
 		</div>
 	);
@@ -278,18 +371,46 @@ function ProjectEditor({
 
 	return (
 		<div className="flex flex-col gap-3">
-			<FieldRow label="Project Name" htmlFor={`${blockId}-name`} error={errors.name?.message}>
+			<FieldRow
+				label="Project Name"
+				htmlFor={`${blockId}-name`}
+				error={errors.name?.message}
+			>
 				<BareInput id={`${blockId}-name`} {...register("name")} />
 			</FieldRow>
-			<FieldRow label="URL" htmlFor={`${blockId}-url`} error={errors.url?.message}>
-				<BareInput id={`${blockId}-url`} type="url" {...register("url")} />
+			<FieldRow
+				label="URL"
+				htmlFor={`${blockId}-url`}
+				error={errors.url?.message}
+			>
+				<BareInput
+					id={`${blockId}-url`}
+					type="url"
+					{...register("url")}
+				/>
 			</FieldRow>
 			<div className="grid grid-cols-2 gap-3">
-				<FieldRow label="Start Date" htmlFor={`${blockId}-start`} error={errors.startDate?.message}>
-					<BareInput id={`${blockId}-start`} placeholder="YYYY-MM" {...register("startDate")} />
+				<FieldRow
+					label="Start Date"
+					htmlFor={`${blockId}-start`}
+					error={errors.startDate?.message}
+				>
+					<BareInput
+						id={`${blockId}-start`}
+						placeholder="YYYY-MM"
+						{...register("startDate")}
+					/>
 				</FieldRow>
-				<FieldRow label="End Date" htmlFor={`${blockId}-end`} error={errors.endDate?.message}>
-					<BareInput id={`${blockId}-end`} placeholder="YYYY-MM or blank" {...register("endDate")} />
+				<FieldRow
+					label="End Date"
+					htmlFor={`${blockId}-end`}
+					error={errors.endDate?.message}
+				>
+					<BareInput
+						id={`${blockId}-end`}
+						placeholder="YYYY-MM or blank"
+						{...register("endDate")}
+					/>
 				</FieldRow>
 			</div>
 			<FieldRow label="Description" htmlFor={`${blockId}-desc`}>
@@ -343,21 +464,56 @@ function VolunteerEditor({
 
 	return (
 		<div className="flex flex-col gap-3">
-			<FieldRow label="Organization" htmlFor={`${blockId}-org`} error={errors.organization?.message}>
-				<BareInput id={`${blockId}-org`} {...register("organization")} />
+			<FieldRow
+				label="Organization"
+				htmlFor={`${blockId}-org`}
+				error={errors.organization?.message}
+			>
+				<BareInput
+					id={`${blockId}-org`}
+					{...register("organization")}
+				/>
 			</FieldRow>
-			<FieldRow label="Position" htmlFor={`${blockId}-pos`} error={errors.position?.message}>
+			<FieldRow
+				label="Position"
+				htmlFor={`${blockId}-pos`}
+				error={errors.position?.message}
+			>
 				<BareInput id={`${blockId}-pos`} {...register("position")} />
 			</FieldRow>
-			<FieldRow label="URL" htmlFor={`${blockId}-url`} error={errors.url?.message}>
-				<BareInput id={`${blockId}-url`} type="url" {...register("url")} />
+			<FieldRow
+				label="URL"
+				htmlFor={`${blockId}-url`}
+				error={errors.url?.message}
+			>
+				<BareInput
+					id={`${blockId}-url`}
+					type="url"
+					{...register("url")}
+				/>
 			</FieldRow>
 			<div className="grid grid-cols-2 gap-3">
-				<FieldRow label="Start Date" htmlFor={`${blockId}-start`} error={errors.startDate?.message}>
-					<BareInput id={`${blockId}-start`} placeholder="YYYY-MM" {...register("startDate")} />
+				<FieldRow
+					label="Start Date"
+					htmlFor={`${blockId}-start`}
+					error={errors.startDate?.message}
+				>
+					<BareInput
+						id={`${blockId}-start`}
+						placeholder="YYYY-MM"
+						{...register("startDate")}
+					/>
 				</FieldRow>
-				<FieldRow label="End Date" htmlFor={`${blockId}-end`} error={errors.endDate?.message}>
-					<BareInput id={`${blockId}-end`} placeholder="YYYY-MM or blank" {...register("endDate")} />
+				<FieldRow
+					label="End Date"
+					htmlFor={`${blockId}-end`}
+					error={errors.endDate?.message}
+				>
+					<BareInput
+						id={`${blockId}-end`}
+						placeholder="YYYY-MM or blank"
+						{...register("endDate")}
+					/>
 				</FieldRow>
 			</div>
 			<FieldRow label="Summary" htmlFor={`${blockId}-summary`}>
@@ -410,17 +566,41 @@ function AwardEditor({
 
 	return (
 		<div className="flex flex-col gap-3">
-			<FieldRow label="Title" htmlFor={`${blockId}-title`} error={errors.title?.message}>
+			<FieldRow
+				label="Title"
+				htmlFor={`${blockId}-title`}
+				error={errors.title?.message}
+			>
 				<BareInput id={`${blockId}-title`} {...register("title")} />
 			</FieldRow>
-			<FieldRow label="Awarder" htmlFor={`${blockId}-awarder`} error={errors.awarder?.message}>
+			<FieldRow
+				label="Awarder"
+				htmlFor={`${blockId}-awarder`}
+				error={errors.awarder?.message}
+			>
 				<BareInput id={`${blockId}-awarder`} {...register("awarder")} />
 			</FieldRow>
-			<FieldRow label="Date" htmlFor={`${blockId}-date`} error={errors.date?.message}>
-				<BareInput id={`${blockId}-date`} placeholder="YYYY-MM" {...register("date")} />
+			<FieldRow
+				label="Date"
+				htmlFor={`${blockId}-date`}
+				error={errors.date?.message}
+			>
+				<BareInput
+					id={`${blockId}-date`}
+					placeholder="YYYY-MM"
+					{...register("date")}
+				/>
 			</FieldRow>
-			<FieldRow label="Summary" htmlFor={`${blockId}-summary`} error={errors.summary?.message}>
-				<BareTextarea id={`${blockId}-summary`} rows={3} {...register("summary")} />
+			<FieldRow
+				label="Summary"
+				htmlFor={`${blockId}-summary`}
+				error={errors.summary?.message}
+			>
+				<BareTextarea
+					id={`${blockId}-summary`}
+					rows={3}
+					{...register("summary")}
+				/>
 			</FieldRow>
 		</div>
 	);
@@ -458,20 +638,52 @@ function PublicationEditor({
 
 	return (
 		<div className="flex flex-col gap-3">
-			<FieldRow label="Name" htmlFor={`${blockId}-name`} error={errors.name?.message}>
+			<FieldRow
+				label="Name"
+				htmlFor={`${blockId}-name`}
+				error={errors.name?.message}
+			>
 				<BareInput id={`${blockId}-name`} {...register("name")} />
 			</FieldRow>
-			<FieldRow label="Publisher" htmlFor={`${blockId}-pub`} error={errors.publisher?.message}>
+			<FieldRow
+				label="Publisher"
+				htmlFor={`${blockId}-pub`}
+				error={errors.publisher?.message}
+			>
 				<BareInput id={`${blockId}-pub`} {...register("publisher")} />
 			</FieldRow>
-			<FieldRow label="Release Date" htmlFor={`${blockId}-date`} error={errors.releaseDate?.message}>
-				<BareInput id={`${blockId}-date`} placeholder="YYYY-MM" {...register("releaseDate")} />
+			<FieldRow
+				label="Release Date"
+				htmlFor={`${blockId}-date`}
+				error={errors.releaseDate?.message}
+			>
+				<BareInput
+					id={`${blockId}-date`}
+					placeholder="YYYY-MM"
+					{...register("releaseDate")}
+				/>
 			</FieldRow>
-			<FieldRow label="URL" htmlFor={`${blockId}-url`} error={errors.url?.message}>
-				<BareInput id={`${blockId}-url`} type="url" {...register("url")} />
+			<FieldRow
+				label="URL"
+				htmlFor={`${blockId}-url`}
+				error={errors.url?.message}
+			>
+				<BareInput
+					id={`${blockId}-url`}
+					type="url"
+					{...register("url")}
+				/>
 			</FieldRow>
-			<FieldRow label="Summary" htmlFor={`${blockId}-summary`} error={errors.summary?.message}>
-				<BareTextarea id={`${blockId}-summary`} rows={3} {...register("summary")} />
+			<FieldRow
+				label="Summary"
+				htmlFor={`${blockId}-summary`}
+				error={errors.summary?.message}
+			>
+				<BareTextarea
+					id={`${blockId}-summary`}
+					rows={3}
+					{...register("summary")}
+				/>
 			</FieldRow>
 		</div>
 	);
@@ -509,11 +721,23 @@ function LanguageEditor({
 
 	return (
 		<div className="flex flex-col gap-3">
-			<FieldRow label="Language" htmlFor={`${blockId}-lang`} error={errors.language?.message}>
+			<FieldRow
+				label="Language"
+				htmlFor={`${blockId}-lang`}
+				error={errors.language?.message}
+			>
 				<BareInput id={`${blockId}-lang`} {...register("language")} />
 			</FieldRow>
-			<FieldRow label="Fluency" htmlFor={`${blockId}-fluency`} error={errors.fluency?.message}>
-				<BareInput id={`${blockId}-fluency`} placeholder="e.g. Native, Fluent" {...register("fluency")} />
+			<FieldRow
+				label="Fluency"
+				htmlFor={`${blockId}-fluency`}
+				error={errors.fluency?.message}
+			>
+				<BareInput
+					id={`${blockId}-fluency`}
+					placeholder="e.g. Native, Fluent"
+					{...register("fluency")}
+				/>
 			</FieldRow>
 		</div>
 	);
@@ -551,11 +775,23 @@ function InterestEditor({
 
 	return (
 		<div className="flex flex-col gap-3">
-			<FieldRow label="Interest" htmlFor={`${blockId}-name`} error={errors.name?.message}>
+			<FieldRow
+				label="Interest"
+				htmlFor={`${blockId}-name`}
+				error={errors.name?.message}
+			>
 				<BareInput id={`${blockId}-name`} {...register("name")} />
 			</FieldRow>
-			<FieldRow label="Keywords" htmlFor={`${blockId}-kw`} error={errors.keywords?.message}>
-				<BareInput id={`${blockId}-kw`} placeholder="Comma-separated" {...register("keywords")} />
+			<FieldRow
+				label="Keywords"
+				htmlFor={`${blockId}-kw`}
+				error={errors.keywords?.message}
+			>
+				<BareInput
+					id={`${blockId}-kw`}
+					placeholder="Comma-separated"
+					{...register("keywords")}
+				/>
 			</FieldRow>
 		</div>
 	);
@@ -593,11 +829,23 @@ function ReferenceEditor({
 
 	return (
 		<div className="flex flex-col gap-3">
-			<FieldRow label="Name" htmlFor={`${blockId}-name`} error={errors.name?.message}>
+			<FieldRow
+				label="Name"
+				htmlFor={`${blockId}-name`}
+				error={errors.name?.message}
+			>
 				<BareInput id={`${blockId}-name`} {...register("name")} />
 			</FieldRow>
-			<FieldRow label="Reference" htmlFor={`${blockId}-ref`} error={errors.reference?.message}>
-				<BareTextarea id={`${blockId}-ref`} rows={4} {...register("reference")} />
+			<FieldRow
+				label="Reference"
+				htmlFor={`${blockId}-ref`}
+				error={errors.reference?.message}
+			>
+				<BareTextarea
+					id={`${blockId}-ref`}
+					rows={4}
+					{...register("reference")}
+				/>
 			</FieldRow>
 		</div>
 	);
@@ -635,17 +883,41 @@ function CertificateEditor({
 
 	return (
 		<div className="flex flex-col gap-3">
-			<FieldRow label="Certificate Name" htmlFor={`${blockId}-name`} error={errors.name?.message}>
+			<FieldRow
+				label="Certificate Name"
+				htmlFor={`${blockId}-name`}
+				error={errors.name?.message}
+			>
 				<BareInput id={`${blockId}-name`} {...register("name")} />
 			</FieldRow>
-			<FieldRow label="Issuer" htmlFor={`${blockId}-issuer`} error={errors.issuer?.message}>
+			<FieldRow
+				label="Issuer"
+				htmlFor={`${blockId}-issuer`}
+				error={errors.issuer?.message}
+			>
 				<BareInput id={`${blockId}-issuer`} {...register("issuer")} />
 			</FieldRow>
-			<FieldRow label="Date" htmlFor={`${blockId}-date`} error={errors.date?.message}>
-				<BareInput id={`${blockId}-date`} placeholder="YYYY-MM" {...register("date")} />
+			<FieldRow
+				label="Date"
+				htmlFor={`${blockId}-date`}
+				error={errors.date?.message}
+			>
+				<BareInput
+					id={`${blockId}-date`}
+					placeholder="YYYY-MM"
+					{...register("date")}
+				/>
 			</FieldRow>
-			<FieldRow label="URL" htmlFor={`${blockId}-url`} error={errors.url?.message}>
-				<BareInput id={`${blockId}-url`} type="url" {...register("url")} />
+			<FieldRow
+				label="URL"
+				htmlFor={`${blockId}-url`}
+				error={errors.url?.message}
+			>
+				<BareInput
+					id={`${blockId}-url`}
+					type="url"
+					{...register("url")}
+				/>
 			</FieldRow>
 		</div>
 	);
