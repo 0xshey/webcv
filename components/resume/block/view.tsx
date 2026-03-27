@@ -62,7 +62,7 @@ function ShortDate({ date }: { date?: string }) {
 
 export function WorkBlock({ item }: { item: ResumeWorkItem }) {
 	return (
-		<div className="flex flex-col gap-2">
+		<div className="flex flex-col gap-2 sm:pl-2">
 			<div className="flex items-start justify-between gap-2">
 				<div className="flex flex-col gap-1">
 					<p className="">{item.position}</p>
@@ -80,7 +80,7 @@ export function WorkBlock({ item }: { item: ResumeWorkItem }) {
 
 export function EducationBlock({ item }: { item: ResumeEducationItem }) {
 	return (
-		<div className="flex flex-col gap-2">
+		<div className="flex flex-col gap-2 sm:pl-2">
 			<div className="flex items-start justify-between gap-2">
 				<div className="flex flex-col gap-1">
 					<p className="">{item.studyType} in {item.area}</p>
@@ -109,7 +109,7 @@ export function SkillBlock({ item }: { item: ResumeSkillItem }) {
 			: [];
 
 	return (
-		<div className="flex flex-col gap-2">
+		<div className="flex flex-col gap-2 sm:pl-2">
 			<div className="flex items-center gap-2">
 				<span className="">{item.name}</span>
 				{item.level && (
@@ -125,7 +125,7 @@ export function SkillBlock({ item }: { item: ResumeSkillItem }) {
 
 export function ProjectBlock({ item }: { item: ResumeProjectItem }) {
 	return (
-		<div className="flex flex-col gap-2">
+		<div className="flex flex-col gap-2 sm:pl-2">
 			<div className="flex items-start justify-between gap-2">
 				<div className="flex items-center gap-2 flex-wrap">
 					<p className="">{item.name}</p>
@@ -142,7 +142,7 @@ export function ProjectBlock({ item }: { item: ResumeProjectItem }) {
 
 export function VolunteerBlock({ item }: { item: ResumeVolunteerItem }) {
 	return (
-		<div className="flex flex-col gap-2">
+		<div className="flex flex-col gap-2 sm:pl-2">
 			<div className="flex items-start justify-between gap-2">
 				<div className="flex flex-col gap-1">
 					<p className="">{item.position}</p>
@@ -160,20 +160,20 @@ export function VolunteerBlock({ item }: { item: ResumeVolunteerItem }) {
 
 export function AwardBlock({ item }: { item: ResumeAwardItem }) {
 	return (
-		<div className="flex flex-col gap-2">
+		<div className="flex flex-col gap-2 sm:pl-2">
 			<div className="flex items-start justify-between gap-2">
 				<p className="">{item.title}</p>
 				<ShortDate date={item.date} />
 			</div>
 			<p className="text-muted-foreground">{item.awarder}</p>
-			{item.summary && <p className="pl-2">{item.summary}</p>}
+			{item.summary && <p>{item.summary}</p>}
 		</div>
 	);
 }
 
 export function PublicationBlock({ item }: { item: ResumePublicationItem }) {
 	return (
-		<div className="flex flex-col gap-2">
+		<div className="flex flex-col gap-2 sm:pl-2">
 			<div className="flex items-start justify-between gap-2">
 				<div className="flex items-center gap-2 flex-wrap">
 					<p className="">{item.name}</p>
@@ -182,14 +182,14 @@ export function PublicationBlock({ item }: { item: ResumePublicationItem }) {
 				<ShortDate date={item.releaseDate} />
 			</div>
 			<p className="text-muted-foreground">{item.publisher}</p>
-			{item.summary && <p className="pl-2">{item.summary}</p>}
+			{item.summary && <p>{item.summary}</p>}
 		</div>
 	);
 }
 
 export function LanguageBlock({ item }: { item: ResumeLanguageItem }) {
 	return (
-		<div className="flex items-center gap-2">
+		<div className="flex items-center gap-2 sm:pl-2">
 			<span className="">{item.language}</span>
 			<span className="text-muted-foreground">· {item.fluency}</span>
 		</div>
@@ -207,7 +207,7 @@ export function InterestBlock({ item }: { item: ResumeInterestItem }) {
 			: [];
 
 	return (
-		<div className="flex flex-col gap-1">
+		<div className="flex flex-col gap-1 sm:pl-2">
 			<span className="">{item.name}</span>
 			{keywords.length > 0 && (
 				<p className="text-muted-foreground">{keywords.join(", ")}</p>
@@ -218,7 +218,7 @@ export function InterestBlock({ item }: { item: ResumeInterestItem }) {
 
 export function ReferenceBlock({ item }: { item: ResumeReferenceItem }) {
 	return (
-		<div className="flex flex-col gap-2">
+		<div className="flex flex-col gap-2 sm:pl-2">
 			<p className="">{item.name}</p>
 			<p>{item.reference}</p>
 		</div>
@@ -227,13 +227,13 @@ export function ReferenceBlock({ item }: { item: ResumeReferenceItem }) {
 
 export function CertificateBlock({ item }: { item: ResumeCertificateItem }) {
 	return (
-		<div className="flex flex-col gap-2">
+		<div className="flex flex-col gap-2 sm:pl-2">
 			<div className="flex items-start justify-between gap-2">
 				<div className="flex items-center gap-2 flex-wrap">
 					<p className="">{item.name}</p>
 					{item.url && <LinkCapsule href={item.url} />}
 				</div>
-				<ShortDate date={item.date} />
+				{item.date && <ShortDate date={item.date} />}
 			</div>
 			<p className="text-muted-foreground">{item.issuer}</p>
 		</div>
