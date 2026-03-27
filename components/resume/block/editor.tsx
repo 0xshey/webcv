@@ -546,6 +546,7 @@ function AwardEditor({
 
 	const {
 		register,
+		control,
 		watch,
 		formState: { errors },
 	} = useForm<FormValues>({
@@ -591,15 +592,18 @@ function AwardEditor({
 					{...register("date")}
 				/>
 			</FieldRow>
-			<FieldRow
-				label="Summary"
-				htmlFor={`${blockId}-summary`}
-				error={errors.summary?.message}
-			>
-				<BareTextarea
-					id={`${blockId}-summary`}
-					rows={3}
-					{...register("summary")}
+			<FieldRow label="Summary" htmlFor={`${blockId}-summary`}>
+				<Controller
+					control={control}
+					name="summary"
+					render={({ field }) => (
+						<RichTextEditor
+							key={blockId}
+							value={field.value ?? ""}
+							onChange={field.onChange}
+							id={`${blockId}-summary`}
+						/>
+					)}
 				/>
 			</FieldRow>
 		</div>
@@ -618,6 +622,7 @@ function PublicationEditor({
 
 	const {
 		register,
+		control,
 		watch,
 		formState: { errors },
 	} = useForm<FormValues>({
@@ -674,15 +679,18 @@ function PublicationEditor({
 					{...register("url")}
 				/>
 			</FieldRow>
-			<FieldRow
-				label="Summary"
-				htmlFor={`${blockId}-summary`}
-				error={errors.summary?.message}
-			>
-				<BareTextarea
-					id={`${blockId}-summary`}
-					rows={3}
-					{...register("summary")}
+			<FieldRow label="Summary" htmlFor={`${blockId}-summary`}>
+				<Controller
+					control={control}
+					name="summary"
+					render={({ field }) => (
+						<RichTextEditor
+							key={blockId}
+							value={field.value ?? ""}
+							onChange={field.onChange}
+							id={`${blockId}-summary`}
+						/>
+					)}
 				/>
 			</FieldRow>
 		</div>
