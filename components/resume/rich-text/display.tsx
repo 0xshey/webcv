@@ -6,7 +6,7 @@ interface RichTextDisplayProps {
 export function RichTextDisplay({ html, className }: RichTextDisplayProps) {
   return (
     <div
-      className={`[&_ul]:list-disc [&_ul]:pl-4 ${className ?? ''}`}
+      className={`[&_ul]:list-disc [&_ul]:pl-4 [&_ul_li::marker]:text-[0.6em] ${className ?? ''}`}
       dangerouslySetInnerHTML={{ __html: html }}
     />
   )

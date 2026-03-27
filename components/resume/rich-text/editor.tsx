@@ -30,7 +30,7 @@ export function RichTextEditor({ value, onChange, placeholder, id }: RichTextEdi
     editorProps: {
       attributes: {
         id: id ?? '',
-        class: 'min-h-[60px] outline-none [&_ul]:list-disc [&_ul]:pl-4',
+        class: 'min-h-[60px] outline-none [&_ul]:list-disc [&_ul]:pl-4 [&_ul_li::marker]:text-[0.6em]',
       },
     },
     onUpdate({ editor }) {
