@@ -187,11 +187,22 @@ export function PublicationBlock({ item }: { item: ResumePublicationItem }) {
 	);
 }
 
+const FLUENCY_DESCRIPTIONS: Record<string, string> = {
+	Basic: "A1-A2 (Basic User): Elementary understanding, simple phrases, basic daily interaction.",
+	Independent: "B1-B2 (Independent User): Can handle everyday situations, express opinions, and work in the language with reasonable fluency.",
+	Proficient: "C1-C2 (Proficient User): Highly skilled, fluent, spontaneous, and able to understand complex texts and nuances (C2 is near-native mastery).",
+};
+
 export function LanguageBlock({ item }: { item: ResumeLanguageItem }) {
 	return (
 		<div className="flex items-center gap-2 sm:pl-2">
 			<span className="">{item.language}</span>
-			<span className="text-muted-foreground">· {item.fluency}</span>
+			<span
+				className="text-muted-foreground"
+				title={FLUENCY_DESCRIPTIONS[item.fluency ?? ""] ?? undefined}
+			>
+				· {item.fluency}
+			</span>
 		</div>
 	);
 }

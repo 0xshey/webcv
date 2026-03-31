@@ -39,6 +39,21 @@ function BareInput({
 	);
 }
 
+function BareSelect({
+	className = "",
+	children,
+	...props
+}: React.SelectHTMLAttributes<HTMLSelectElement>) {
+	return (
+		<select
+			className={`w-full bg-transparent border-b border-border/40 focus:border-foreground/40 outline-none rounded-none px-0 py-0.5 text-foreground transition-colors ${className}`}
+			{...props}
+		>
+			{children}
+		</select>
+	);
+}
+
 function BareTextarea({
 	className = "",
 	...props
@@ -741,11 +756,12 @@ function LanguageEditor({
 				htmlFor={`${blockId}-fluency`}
 				error={errors.fluency?.message}
 			>
-				<BareInput
-					id={`${blockId}-fluency`}
-					placeholder="e.g. Native, Fluent"
-					{...register("fluency")}
-				/>
+				<BareSelect id={`${blockId}-fluency`} {...register("fluency")}>
+					<option value="">Select level…</option>
+					<option value="Basic">Basic — A1-A2: Elementary understanding, simple phrases, basic daily interaction</option>
+					<option value="Independent">Independent — B1-B2: Handles everyday situations, expresses opinions with reasonable fluency</option>
+					<option value="Proficient">Proficient — C1-C2: Fluent, spontaneous, understands complex texts (C2 is near-native)</option>
+				</BareSelect>
 			</FieldRow>
 		</div>
 	);
