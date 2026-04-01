@@ -37,26 +37,28 @@ import type {
 	ResumeCertificateItem,
 } from "@/lib/types";
 
-const PdfLink = dynamic(
-	() => import("./pdf/pdf-link").then((m) => m.PdfLink),
-	{ ssr: false, loading: () => null },
-);
+const PdfLink = dynamic(() => import("./pdf/pdf-link").then((m) => m.PdfLink), {
+	ssr: false,
+	loading: () => null,
+});
 
 function BasicsView() {
 	const { content } = useResume();
 	const { basics } = content;
 	return (
-		<div className="flex flex-col gap-2">
-			<h1 className="font-semibold text-2xl">
-				{basics.name || "Your Name"}
-			</h1>
-			{basics.label && (
-				<p className="text-muted-foreground">{basics.label}</p>
-			)}
-			<div className="flex flex-wrap gap-3 text-muted-foreground mt-1">
+		<div className="flex flex-col gap-8">
+			<div className="flex flex-col gap-2">
+				<h1 className="font-semibold text-2xl">
+					{basics.name || "Your Name"}
+				</h1>
+				{basics.label && (
+					<p className="text-muted-foreground">{basics.label}</p>
+				)}
+			</div>
+			<div className="flex flex-wrap gap-4 text-muted-foreground mt-1">
+				{basics.url && <LinkCapsule href={basics.url} />}
 				{basics.email && <span>{basics.email}</span>}
 				{basics.phone && <span>{basics.phone}</span>}
-				{basics.url && <LinkCapsule href={basics.url} />}
 			</div>
 			{basics.summary && (
 				<div className="mt-4">
@@ -135,7 +137,14 @@ function SectionContent({
 }
 
 export function Resume() {
-	const { content, structure, isEditMode, isSaving, toggleEditMode, saveAndExit } = useResume();
+	const {
+		content,
+		structure,
+		isEditMode,
+		isSaving,
+		toggleEditMode,
+		saveAndExit,
+	} = useResume();
 
 	return (
 		<div className="flex flex-col gap-8">
@@ -156,7 +165,11 @@ export function Resume() {
 
 				<div className="flex items-center gap-4">
 					{isEditMode ? (
-						<Button variant="default" onClick={saveAndExit} disabled={isSaving}>
+						<Button
+							variant="default"
+							onClick={saveAndExit}
+							disabled={isSaving}
+						>
 							<Save />
 							{isSaving ? "Saving…" : "Save"}
 						</Button>
@@ -170,18 +183,26 @@ export function Resume() {
 			</div>
 
 			{/* Resume content */}
-			<div className={`flex flex-col ${isEditMode ? "gap-12" : "gap-10"}`}>
+			<div
+				className={`flex flex-col ${isEditMode ? "gap-12" : "gap-10"}`}
+			>
 				<div className="flex flex-col gap-3">
-					{isEditMode && <SectionHeader sectionKey="basics" visible />}
+					{isEditMode && (
+						<SectionHeader sectionKey="basics" visible />
+					)}
 					{isEditMode ? <BasicsEditor /> : <BasicsView />}
 				</div>
 
 				{structure.sections
 					.filter((s) => s.key !== "basics")
 					.map((s) => {
-						const sectionKey = s.key as Exclude<SectionKey, "basics">;
+						const sectionKey = s.key as Exclude<
+							SectionKey,
+							"basics"
+						>;
 						const items =
-							(content[sectionKey] as unknown[] | undefined) ?? [];
+							(content[sectionKey] as unknown[] | undefined) ??
+							[];
 
 						if (!isEditMode && (!s.visible || items.length === 0))
 							return null;
@@ -191,7 +212,11 @@ export function Resume() {
 								key={s.key}
 								className={`flex flex-col gap-4 ${!s.visible && isEditMode ? "opacity-35" : ""}`}
 							>
-								<SectionHeader sectionKey={s.key} visible={s.visible} />
+								<SectionHeader
+									sectionKey={s.key}
+									visible={s.visible}
+									itemCount={items.length}
+								/>
 								<SectionContent sectionKey={sectionKey} />
 							</div>
 						);

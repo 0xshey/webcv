@@ -23,15 +23,17 @@ const SECTION_LABELS: Record<SectionKey, string> = {
 interface SectionHeaderProps {
 	sectionKey: SectionKey;
 	visible: boolean;
+	itemCount?: number;
 }
 
-export function SectionHeader({ sectionKey, visible }: SectionHeaderProps) {
+export function SectionHeader({ sectionKey, visible, itemCount = 0 }: SectionHeaderProps) {
 	const { dispatch, isEditMode } = useResume();
+	const showToggle = isEditMode && sectionKey !== "basics" && (visible || itemCount > 0);
 
 	return (
 		<div className="flex items-center gap-2">
 			<h2 className="font-medium">{SECTION_LABELS[sectionKey]}</h2>
-			{isEditMode && sectionKey !== "basics" && (
+			{showToggle && (
 				<Button
 					variant="ghost"
 					className=""

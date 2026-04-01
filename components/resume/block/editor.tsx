@@ -2,9 +2,11 @@
 
 import { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useResume } from "@/components/providers/resume-provider";
 import { RichTextEditor } from "../rich-text/editor";
+import { PartialDateInput } from "./date-input";
 import {
 	workItemSchema,
 	educationItemSchema,
@@ -39,21 +41,6 @@ function BareInput({
 	);
 }
 
-function BareSelect({
-	className = "",
-	children,
-	...props
-}: React.SelectHTMLAttributes<HTMLSelectElement>) {
-	return (
-		<select
-			className={`w-full bg-transparent border-b border-border/40 focus:border-foreground/40 outline-none rounded-none px-0 py-0.5 text-foreground transition-colors ${className}`}
-			{...props}
-		>
-			{children}
-		</select>
-	);
-}
-
 function BareTextarea({
 	className = "",
 	...props
@@ -79,7 +66,7 @@ function FieldRow({
 }) {
 	return (
 		<div className="flex flex-col gap-0.5">
-			<label htmlFor={htmlFor} className="text-muted-foreground/60">
+			<label htmlFor={htmlFor} className="text-muted-foreground/60 text-sm">
 				{label}
 			</label>
 			{children}
@@ -128,10 +115,7 @@ function WorkEditor({
 				htmlFor={`${blockId}-position`}
 				error={errors.position?.message}
 			>
-				<BareInput
-					id={`${blockId}-position`}
-					{...register("position")}
-				/>
+				<BareInput id={`${blockId}-position`} {...register("position")} />
 			</FieldRow>
 			<FieldRow
 				label="Company"
@@ -145,11 +129,7 @@ function WorkEditor({
 				htmlFor={`${blockId}-url`}
 				error={errors.url?.message}
 			>
-				<BareInput
-					id={`${blockId}-url`}
-					type="url"
-					{...register("url")}
-				/>
+				<BareInput id={`${blockId}-url`} type="url" {...register("url")} />
 			</FieldRow>
 			<div className="grid grid-cols-2 gap-3">
 				<FieldRow
@@ -157,10 +137,16 @@ function WorkEditor({
 					htmlFor={`${blockId}-start`}
 					error={errors.startDate?.message}
 				>
-					<BareInput
-						id={`${blockId}-start`}
-						placeholder="YYYY-MM"
-						{...register("startDate")}
+					<Controller
+						control={control}
+						name="startDate"
+						render={({ field }) => (
+							<PartialDateInput
+								id={`${blockId}-start`}
+								value={field.value ?? ""}
+								onChange={field.onChange}
+							/>
+						)}
 					/>
 				</FieldRow>
 				<FieldRow
@@ -168,10 +154,16 @@ function WorkEditor({
 					htmlFor={`${blockId}-end`}
 					error={errors.endDate?.message}
 				>
-					<BareInput
-						id={`${blockId}-end`}
-						placeholder="YYYY-MM or blank"
-						{...register("endDate")}
+					<Controller
+						control={control}
+						name="endDate"
+						render={({ field }) => (
+							<PartialDateInput
+								id={`${blockId}-end`}
+								value={field.value ?? ""}
+								onChange={field.onChange}
+							/>
+						)}
 					/>
 				</FieldRow>
 			</div>
@@ -205,6 +197,7 @@ function EducationEditor({
 
 	const {
 		register,
+		control,
 		watch,
 		formState: { errors },
 	} = useForm<FormValues>({
@@ -248,10 +241,7 @@ function EducationEditor({
 				htmlFor={`${blockId}-inst`}
 				error={errors.institution?.message}
 			>
-				<BareInput
-					id={`${blockId}-inst`}
-					{...register("institution")}
-				/>
+				<BareInput id={`${blockId}-inst`} {...register("institution")} />
 			</FieldRow>
 			<div className="grid grid-cols-2 gap-3">
 				<FieldRow
@@ -259,10 +249,16 @@ function EducationEditor({
 					htmlFor={`${blockId}-start`}
 					error={errors.startDate?.message}
 				>
-					<BareInput
-						id={`${blockId}-start`}
-						placeholder="YYYY-MM"
-						{...register("startDate")}
+					<Controller
+						control={control}
+						name="startDate"
+						render={({ field }) => (
+							<PartialDateInput
+								id={`${blockId}-start`}
+								value={field.value ?? ""}
+								onChange={field.onChange}
+							/>
+						)}
 					/>
 				</FieldRow>
 				<FieldRow
@@ -270,10 +266,16 @@ function EducationEditor({
 					htmlFor={`${blockId}-end`}
 					error={errors.endDate?.message}
 				>
-					<BareInput
-						id={`${blockId}-end`}
-						placeholder="YYYY-MM or blank"
-						{...register("endDate")}
+					<Controller
+						control={control}
+						name="endDate"
+						render={({ field }) => (
+							<PartialDateInput
+								id={`${blockId}-end`}
+								value={field.value ?? ""}
+								onChange={field.onChange}
+							/>
+						)}
 					/>
 				</FieldRow>
 			</div>
@@ -398,11 +400,7 @@ function ProjectEditor({
 				htmlFor={`${blockId}-url`}
 				error={errors.url?.message}
 			>
-				<BareInput
-					id={`${blockId}-url`}
-					type="url"
-					{...register("url")}
-				/>
+				<BareInput id={`${blockId}-url`} type="url" {...register("url")} />
 			</FieldRow>
 			<div className="grid grid-cols-2 gap-3">
 				<FieldRow
@@ -410,10 +408,16 @@ function ProjectEditor({
 					htmlFor={`${blockId}-start`}
 					error={errors.startDate?.message}
 				>
-					<BareInput
-						id={`${blockId}-start`}
-						placeholder="YYYY-MM"
-						{...register("startDate")}
+					<Controller
+						control={control}
+						name="startDate"
+						render={({ field }) => (
+							<PartialDateInput
+								id={`${blockId}-start`}
+								value={field.value ?? ""}
+								onChange={field.onChange}
+							/>
+						)}
 					/>
 				</FieldRow>
 				<FieldRow
@@ -421,10 +425,16 @@ function ProjectEditor({
 					htmlFor={`${blockId}-end`}
 					error={errors.endDate?.message}
 				>
-					<BareInput
-						id={`${blockId}-end`}
-						placeholder="YYYY-MM or blank"
-						{...register("endDate")}
+					<Controller
+						control={control}
+						name="endDate"
+						render={({ field }) => (
+							<PartialDateInput
+								id={`${blockId}-end`}
+								value={field.value ?? ""}
+								onChange={field.onChange}
+							/>
+						)}
 					/>
 				</FieldRow>
 			</div>
@@ -491,21 +501,14 @@ function VolunteerEditor({
 				htmlFor={`${blockId}-org`}
 				error={errors.organization?.message}
 			>
-				<BareInput
-					id={`${blockId}-org`}
-					{...register("organization")}
-				/>
+				<BareInput id={`${blockId}-org`} {...register("organization")} />
 			</FieldRow>
 			<FieldRow
 				label="URL"
 				htmlFor={`${blockId}-url`}
 				error={errors.url?.message}
 			>
-				<BareInput
-					id={`${blockId}-url`}
-					type="url"
-					{...register("url")}
-				/>
+				<BareInput id={`${blockId}-url`} type="url" {...register("url")} />
 			</FieldRow>
 			<div className="grid grid-cols-2 gap-3">
 				<FieldRow
@@ -513,10 +516,16 @@ function VolunteerEditor({
 					htmlFor={`${blockId}-start`}
 					error={errors.startDate?.message}
 				>
-					<BareInput
-						id={`${blockId}-start`}
-						placeholder="YYYY-MM"
-						{...register("startDate")}
+					<Controller
+						control={control}
+						name="startDate"
+						render={({ field }) => (
+							<PartialDateInput
+								id={`${blockId}-start`}
+								value={field.value ?? ""}
+								onChange={field.onChange}
+							/>
+						)}
 					/>
 				</FieldRow>
 				<FieldRow
@@ -524,10 +533,16 @@ function VolunteerEditor({
 					htmlFor={`${blockId}-end`}
 					error={errors.endDate?.message}
 				>
-					<BareInput
-						id={`${blockId}-end`}
-						placeholder="YYYY-MM or blank"
-						{...register("endDate")}
+					<Controller
+						control={control}
+						name="endDate"
+						render={({ field }) => (
+							<PartialDateInput
+								id={`${blockId}-end`}
+								value={field.value ?? ""}
+								onChange={field.onChange}
+							/>
+						)}
 					/>
 				</FieldRow>
 			</div>
@@ -601,10 +616,16 @@ function AwardEditor({
 				htmlFor={`${blockId}-date`}
 				error={errors.date?.message}
 			>
-				<BareInput
-					id={`${blockId}-date`}
-					placeholder="YYYY-MM"
-					{...register("date")}
+				<Controller
+					control={control}
+					name="date"
+					render={({ field }) => (
+						<PartialDateInput
+							id={`${blockId}-date`}
+							value={field.value ?? ""}
+							onChange={field.onChange}
+						/>
+					)}
 				/>
 			</FieldRow>
 			<FieldRow label="Summary" htmlFor={`${blockId}-summary`}>
@@ -677,10 +698,16 @@ function PublicationEditor({
 				htmlFor={`${blockId}-date`}
 				error={errors.releaseDate?.message}
 			>
-				<BareInput
-					id={`${blockId}-date`}
-					placeholder="YYYY-MM"
-					{...register("releaseDate")}
+				<Controller
+					control={control}
+					name="releaseDate"
+					render={({ field }) => (
+						<PartialDateInput
+							id={`${blockId}-date`}
+							value={field.value ?? ""}
+							onChange={field.onChange}
+						/>
+					)}
 				/>
 			</FieldRow>
 			<FieldRow
@@ -688,11 +715,7 @@ function PublicationEditor({
 				htmlFor={`${blockId}-url`}
 				error={errors.url?.message}
 			>
-				<BareInput
-					id={`${blockId}-url`}
-					type="url"
-					{...register("url")}
-				/>
+				<BareInput id={`${blockId}-url`} type="url" {...register("url")} />
 			</FieldRow>
 			<FieldRow label="Summary" htmlFor={`${blockId}-summary`}>
 				<Controller
@@ -712,6 +735,24 @@ function PublicationEditor({
 	);
 }
 
+const FLUENCY_OPTIONS = [
+	{
+		value: "Basic",
+		label: "Basic",
+		description: "A1–A2: Elementary understanding, simple phrases, basic daily interaction",
+	},
+	{
+		value: "Independent",
+		label: "Independent",
+		description: "B1–B2: Handles everyday situations, expresses opinions with reasonable fluency",
+	},
+	{
+		value: "Proficient",
+		label: "Proficient",
+		description: "C1–C2: Fluent and spontaneous, understands complex texts (C2 is near-native)",
+	},
+];
+
 function LanguageEditor({
 	blockId,
 	initialValues,
@@ -724,6 +765,7 @@ function LanguageEditor({
 
 	const {
 		register,
+		control,
 		watch,
 		formState: { errors },
 	} = useForm<FormValues>({
@@ -751,18 +793,38 @@ function LanguageEditor({
 			>
 				<BareInput id={`${blockId}-lang`} {...register("language")} />
 			</FieldRow>
-			<FieldRow
-				label="Fluency"
-				htmlFor={`${blockId}-fluency`}
-				error={errors.fluency?.message}
-			>
-				<BareSelect id={`${blockId}-fluency`} {...register("fluency")}>
-					<option value="">Select level…</option>
-					<option value="Basic">Basic — A1-A2: Elementary understanding, simple phrases, basic daily interaction</option>
-					<option value="Independent">Independent — B1-B2: Handles everyday situations, expresses opinions with reasonable fluency</option>
-					<option value="Proficient">Proficient — C1-C2: Fluent, spontaneous, understands complex texts (C2 is near-native)</option>
-				</BareSelect>
-			</FieldRow>
+			<div className="flex flex-col gap-1.5">
+				<span className="text-muted-foreground/60 text-sm">Fluency</span>
+				{errors.fluency?.message && (
+					<p className="text-xs text-destructive">{errors.fluency.message}</p>
+				)}
+				<Controller
+					control={control}
+					name="fluency"
+					render={({ field }) => (
+						<RadioGroup
+							value={field.value ?? ""}
+							onValueChange={field.onChange}
+							className="flex flex-col gap-2"
+						>
+							{FLUENCY_OPTIONS.map((opt) => (
+								<label
+									key={opt.value}
+									className={`flex items-start gap-3 rounded-md bg-muted px-3 py-2.5 cursor-pointer transition-colors ${
+										field.value === opt.value ? "border" : ""
+									}`}
+								>
+									<RadioGroupItem value={opt.value} className="mt-0.5 shrink-0" />
+									<div className="flex flex-col gap-0.5">
+										<span className="font-semibold text-sm leading-tight">{opt.label}</span>
+										<span className="text-muted-foreground text-xs leading-snug">{opt.description}</span>
+									</div>
+								</label>
+							))}
+						</RadioGroup>
+					)}
+				/>
+			</div>
 		</div>
 	);
 }
@@ -865,11 +927,7 @@ function ReferenceEditor({
 				htmlFor={`${blockId}-ref`}
 				error={errors.reference?.message}
 			>
-				<BareTextarea
-					id={`${blockId}-ref`}
-					rows={4}
-					{...register("reference")}
-				/>
+				<BareTextarea id={`${blockId}-ref`} rows={4} {...register("reference")} />
 			</FieldRow>
 		</div>
 	);
@@ -887,6 +945,7 @@ function CertificateEditor({
 
 	const {
 		register,
+		control,
 		watch,
 		formState: { errors },
 	} = useForm<FormValues>({
@@ -926,10 +985,16 @@ function CertificateEditor({
 				htmlFor={`${blockId}-date`}
 				error={errors.date?.message}
 			>
-				<BareInput
-					id={`${blockId}-date`}
-					placeholder="YYYY-MM"
-					{...register("date")}
+				<Controller
+					control={control}
+					name="date"
+					render={({ field }) => (
+						<PartialDateInput
+							id={`${blockId}-date`}
+							value={field.value ?? ""}
+							onChange={field.onChange}
+						/>
+					)}
 				/>
 			</FieldRow>
 			<FieldRow
@@ -937,11 +1002,7 @@ function CertificateEditor({
 				htmlFor={`${blockId}-url`}
 				error={errors.url?.message}
 			>
-				<BareInput
-					id={`${blockId}-url`}
-					type="url"
-					{...register("url")}
-				/>
+				<BareInput id={`${blockId}-url`} type="url" {...register("url")} />
 			</FieldRow>
 		</div>
 	);

@@ -105,24 +105,39 @@ export function reducer(state: ResumeState, action: Action): ResumeState {
 
     case 'ADD_BLOCK': {
       const items = getSection<SectionItem>(state.content, action.section)
+      const isFirst = items.length === 0
       return {
         ...state,
         content: {
           ...state.content,
           [action.section]: [...items, action.item],
         },
+        structure: isFirst ? {
+          ...state.structure,
+          sections: state.structure.sections.map((s) =>
+            s.key === action.section ? { ...s, visible: true } : s
+          ),
+        } : state.structure,
         isDirty: true,
       }
     }
 
     case 'DELETE_BLOCK': {
       const items = getSection<SectionItem>(state.content, action.section)
+      const remaining = items.filter((item) => item.id !== action.id)
+      const isEmpty = remaining.length === 0
       return {
         ...state,
         content: {
           ...state.content,
-          [action.section]: items.filter((item) => item.id !== action.id),
+          [action.section]: remaining,
         },
+        structure: isEmpty ? {
+          ...state.structure,
+          sections: state.structure.sections.map((s) =>
+            s.key === action.section ? { ...s, visible: false } : s
+          ),
+        } : state.structure,
         isDirty: true,
       }
     }
