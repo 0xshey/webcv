@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
+import { Reorder, useDragControls } from 'framer-motion'
 import { Trash2, GripVertical } from 'lucide-react'
 import { useResume } from '@/components/providers/resume-provider'
 import { Button } from '@/components/ui/button'
@@ -35,7 +34,7 @@ import type {
   ResumeCertificateItem,
 } from '@/lib/types'
 
-type Item = Record<string, unknown>
+type Item = Record<string, unknown> & { id: string }
 
 function BlockPreview({
   section,
@@ -60,17 +59,17 @@ function BlockPreview({
 }
 
 interface SortableBlockProps {
-  id: string
+  item: Item
   section: Exclude<SectionKey, 'basics'>
-  initialValues: Record<string, unknown>
   defaultExpanded?: boolean
 }
 
-export function SortableBlock({ id, section, initialValues, defaultExpanded = false }: SortableBlockProps) {
+export function SortableBlock({ item, section, defaultExpanded = false }: SortableBlockProps) {
   const { content, dispatch } = useResume()
   const [expanded, setExpanded] = useState(defaultExpanded)
   const didDragRef = useRef(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  const dragControls = useDragControls()
 
   useEffect(() => {
     if (!defaultExpanded) return
@@ -96,33 +95,33 @@ export function SortableBlock({ id, section, initialValues, defaultExpanded = fa
   }, [expanded])
 
   const liveItem =
-    (content[section] as Item[] | undefined)?.find((i) => i.id === id) ?? initialValues
-
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id })
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.4 : 1,
-  }
+    (content[section] as Item[] | undefined)?.find((i) => i.id === item.id) ?? item
 
   return (
-    <div ref={containerRef}>
-    <div ref={setNodeRef} style={style} className="group/block">
+    <Reorder.Item
+      as="div"
+      value={item}
+      dragControls={dragControls}
+      dragListener={false}
+      whileDrag={{ scale: 1.02, opacity: 0.85 }}
+      transition={{ duration: 0.15 }}
+      className="group/block"
+      ref={containerRef}
+    >
       <div
-        className={`flex items-start gap-1.5 transition-all duration-200 ease-in-out bg-muted/60 rounded-lg p-3 ${!expanded ? 'cursor-pointer' : ''}`}
+        className={`flex items-start gap-1.5 bg-muted/60 rounded-lg p-3 ${!expanded ? 'cursor-pointer' : ''}`}
         onClick={() => { if (!expanded) setExpanded(true) }}
       >
-        {/* Grip — also acts as click-to-collapse when expanded */}
+        {/* Grip — drag handle + click to collapse */}
         <button
-          {...attributes}
-          {...listeners}
           type="button"
           tabIndex={-1}
           aria-label={expanded ? 'Collapse' : 'Drag to reorder'}
-          onMouseDown={() => { didDragRef.current = false }}
-          onMouseMove={() => { didDragRef.current = true }}
+          onPointerDown={(e) => {
+            didDragRef.current = false
+            dragControls.start(e)
+          }}
+          onPointerMove={() => { didDragRef.current = true }}
           onClick={(e) => { e.stopPropagation(); if (!didDragRef.current) setExpanded((v) => !v) }}
           className={`mt-0.5 flex-shrink-0 touch-none transition-colors ${
             expanded
@@ -134,7 +133,7 @@ export function SortableBlock({ id, section, initialValues, defaultExpanded = fa
         </button>
 
         <div className="flex-1 min-w-0 relative">
-          {/* Preview — collapses and fades out when expanded */}
+          {/* Preview — collapses when expanded */}
           <div
             className="grid transition-[grid-template-rows,opacity] duration-200 ease-in-out"
             style={{
@@ -149,7 +148,7 @@ export function SortableBlock({ id, section, initialValues, defaultExpanded = fa
             </div>
           </div>
 
-          {/* Editor — expands and fades in */}
+          {/* Editor — expands when open */}
           <div
             className="grid transition-[grid-template-rows,opacity] duration-200 ease-in-out"
             style={{
@@ -158,7 +157,7 @@ export function SortableBlock({ id, section, initialValues, defaultExpanded = fa
             }}
           >
             <div className="overflow-hidden min-h-0">
-              <BlockEditor section={section} blockId={id} initialValues={initialValues} />
+              <BlockEditor section={section} blockId={item.id} initialValues={item} />
             </div>
           </div>
         </div>
@@ -166,13 +165,12 @@ export function SortableBlock({ id, section, initialValues, defaultExpanded = fa
         <Button
           variant="ghost"
           className="mt-0.5 flex-shrink-0"
-          onClick={(e) => { e.stopPropagation(); dispatch({ type: 'DELETE_BLOCK', section, id }) }}
+          onClick={(e) => { e.stopPropagation(); dispatch({ type: 'DELETE_BLOCK', section, id: item.id }) }}
           aria-label="Delete"
         >
           <Trash2 size={12} />
         </Button>
       </div>
-    </div>
-    </div>
+    </Reorder.Item>
   )
 }
