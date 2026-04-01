@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from 'react'
 import { Reorder, useDragControls } from 'framer-motion'
 import { Trash2, GripVertical } from 'lucide-react'
 import { useResume } from '@/components/providers/resume-provider'
-import { Button } from '@/components/ui/button'
 import { BlockEditor } from './editor'
 import {
   WorkBlock,
@@ -109,7 +108,7 @@ export function SortableBlock({ item, section, defaultExpanded = false }: Sortab
       ref={containerRef}
     >
       <div
-        className={`flex items-start gap-1.5 bg-muted/60 rounded-lg p-3 ${!expanded ? 'cursor-pointer' : ''}`}
+        className={`flex items-start gap-1.5 bg-muted rounded-lg p-3 ${!expanded ? 'cursor-pointer' : ''}`}
         onClick={() => { if (!expanded) setExpanded(true) }}
       >
         {/* Grip — drag handle + click to collapse */}
@@ -162,14 +161,14 @@ export function SortableBlock({ item, section, defaultExpanded = false }: Sortab
           </div>
         </div>
 
-        <Button
-          variant="ghost"
-          className="mt-0.5 flex-shrink-0"
-          onClick={(e) => { e.stopPropagation(); dispatch({ type: 'DELETE_BLOCK', section, id: item.id }) }}
+        <button
+          type="button"
           aria-label="Delete"
+          onClick={(e) => { e.stopPropagation(); dispatch({ type: 'DELETE_BLOCK', section, id: item.id }) }}
+          className="mt-0.5 flex-shrink-0 text-muted-foreground/25 group-hover/block:text-muted-foreground/40 hover:text-destructive/60 transition-colors"
         >
           <Trash2 size={12} />
-        </Button>
+        </button>
       </div>
     </Reorder.Item>
   )
