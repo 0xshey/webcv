@@ -20,6 +20,8 @@ import {
 	ReferenceBlock,
 	CertificateBlock,
 	LinkCapsule,
+	EmailCapsule,
+	PhoneCapsule,
 } from "./block/view";
 import { RichTextDisplay } from "./rich-text/display";
 import type {
@@ -55,10 +57,10 @@ function BasicsView() {
 					<p className="text-muted-foreground">{basics.label}</p>
 				)}
 			</div>
-			<div className="flex flex-wrap gap-4 text-muted-foreground mt-1">
+			<div className="flex flex-wrap gap-2 mt-1">
+				{basics.email && <EmailCapsule email={basics.email} />}
+				{basics.phone && <PhoneCapsule phone={basics.phone} />}
 				{basics.url && <LinkCapsule href={basics.url} />}
-				{basics.email && <span>{basics.email}</span>}
-				{basics.phone && <span>{basics.phone}</span>}
 			</div>
 			{basics.summary && (
 				<div className="mt-4">

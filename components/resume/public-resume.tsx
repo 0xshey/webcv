@@ -29,7 +29,7 @@ import {
   CertificateBlock,
 } from './block/view'
 import { Separator } from '@/components/ui/separator'
-import { LinkCapsule } from './block/view'
+import { LinkCapsule, EmailCapsule, PhoneCapsule } from './block/view'
 
 const SECTION_LABELS: Record<SectionKey, string> = {
   basics: 'Summary',
@@ -62,9 +62,9 @@ export function PublicResume({ content, structure }: PublicResumeProps) {
         {basics.label && (
           <p className="text-base text-muted-foreground">{basics.label}</p>
         )}
-        <div className="flex flex-wrap gap-3 text-muted-foreground">
-          {basics.email && <span>{basics.email}</span>}
-          {basics.phone && <span>{basics.phone}</span>}
+        <div className="flex flex-wrap gap-2">
+          {basics.email && <EmailCapsule email={basics.email} />}
+          {basics.phone && <PhoneCapsule phone={basics.phone} />}
           {basics.url && <LinkCapsule href={basics.url} />}
         </div>
         {basics.summary && (

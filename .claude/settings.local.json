@@ -12,7 +12,15 @@
       "WebFetch(domain:ui.shadcn.com)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(grep -r \"from.*block-editor\\\\|from.*basics-editor\\\\|from.*sortable-block\\\\|from.*drag-handle\\\\|from.*rich-text-editor\\\\|from.*rich-text-display\" /Users/shey/Developer/apply/digitised-cv/components --include=*.tsx)",
+      "Bash(find /Users/shey/Developer/apply/digitised-cv -maxdepth 3 ! -path */node_modules/* ! -path */.next/* ! -path */dist/* -type d)",
+      "Bash(grep -r \"basics-editor\\\\|block-editor\\\\|sortable-block\\\\|sortable-section\\\\|rich-text-editor\\\\|rich-text-display\\\\|section-header\\\\|add-block-button\\\\|drag-handle\\\\|font-size-toggle\" --include=*.tsx --include=*.ts --include=*.jsx --include=*.js)",
+      "Bash(grep -r formatDate --include=*.tsx --include=*.ts /Users/shey/Developer/apply/digitised-cv --exclude-dir=node_modules)",
+      "Bash(grep -r SECTION_LABELS --include=*.tsx --include=*.ts /Users/shey/Developer/apply/digitised-cv --exclude-dir=node_modules)",
+      "Bash(grep -E \"\\\\.tsx$|\\\\.ts$\")",
+      "Bash(grep:*)",
+      "Bash(npx vitest:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

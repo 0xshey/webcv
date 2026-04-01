@@ -1,4 +1,8 @@
-import { Globe } from "lucide-react";
+"use client";
+
+import { useState } from "react";
+import { Globe, Mail, Phone, ArrowUpRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { formatDate, formatDateShort } from "@/lib/resume";
 import type {
 	ResumeWorkItem,
@@ -15,20 +19,66 @@ import type {
 } from "@/lib/types";
 import { RichTextDisplay } from "../rich-text/display";
 
+const capsuleClass = "group inline-flex items-center gap-1.5 bg-muted/50 hover:bg-muted/90 rounded-full px-2.5 py-1 transition-colors text-xs text-muted-foreground";
+
 export function LinkCapsule({ href }: { href: string }) {
 	const display = href.replace(/^https?:\/\//, "").replace(/\/$/, "");
+	const [hovered, setHovered] = useState(false);
 	return (
 		<a
 			href={href}
 			target="_blank"
 			rel="noopener noreferrer"
-			className="inline-flex items-center gap-1 bg-muted/70 hover:bg-muted rounded-full px-2 py-0.5 transition-colors leading-none"
+			className={capsuleClass}
+			onMouseEnter={() => setHovered(true)}
+			onMouseLeave={() => setHovered(false)}
 		>
-			<Globe
-				size={9}
-				className="shrink-0 text-muted-foreground/60 translate-y-px"
-			/>
-			<span className="text-muted-foreground">{display}</span>
+			<span className="relative size-[10px] shrink-0">
+				<AnimatePresence initial={false} mode="wait">
+					{hovered ? (
+						<motion.span
+							key="arrow"
+							className="absolute inset-0 flex items-center justify-center"
+							initial={{ opacity: 0, scale: 0.5 }}
+							animate={{ opacity: 1, scale: 1 }}
+							exit={{ opacity: 0, scale: 0.5 }}
+							transition={{ duration: 0.12 }}
+						>
+							<ArrowUpRight size={10} />
+						</motion.span>
+					) : (
+						<motion.span
+							key="globe"
+							className="absolute inset-0 flex items-center justify-center text-muted-foreground/50"
+							initial={{ opacity: 0, scale: 0.5 }}
+							animate={{ opacity: 1, scale: 1 }}
+							exit={{ opacity: 0, scale: 0.5 }}
+							transition={{ duration: 0.12 }}
+						>
+							<Globe size={10} />
+						</motion.span>
+					)}
+				</AnimatePresence>
+			</span>
+			<span>{display}</span>
+		</a>
+	);
+}
+
+export function EmailCapsule({ email }: { email: string }) {
+	return (
+		<a href={`mailto:${email}`} className={capsuleClass}>
+			<Mail size={10} className="shrink-0 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
+			<span>{email}</span>
+		</a>
+	);
+}
+
+export function PhoneCapsule({ phone }: { phone: string }) {
+	return (
+		<a href={`tel:${phone}`} className={capsuleClass}>
+			<Phone size={10} className="shrink-0 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
+			<span>{phone}</span>
 		</a>
 	);
 }
@@ -38,7 +88,7 @@ function DateRange({ start, end }: { start?: string; end?: string }) {
 	const endLabel = end ? formatDate(end) : "Present";
 	const endShortLabel = end ? formatDateShort(end) : "Present";
 	return (
-		<span className="text-muted-foreground text-sm shrink-0">
+		<span className="text-muted-foreground text-[0.85em] shrink-0">
 			{/* Mobile: stacked short format */}
 			<span className="flex flex-col items-end sm:hidden">
 				<span>{formatDateShort(start)}</span>
@@ -53,7 +103,7 @@ function DateRange({ start, end }: { start?: string; end?: string }) {
 function ShortDate({ date }: { date?: string }) {
 	if (!date) return null;
 	return (
-		<span className="text-muted-foreground text-sm shrink-0">
+		<span className="text-muted-foreground text-[0.85em] shrink-0">
 			<span className="sm:hidden">{formatDateShort(date)}</span>
 			<span className="hidden sm:inline">{formatDate(date)}</span>
 		</span>
