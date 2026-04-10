@@ -8,6 +8,7 @@ import {
 } from '@react-pdf/renderer'
 import type { ResumeContent, ResumeStructure, SectionKey } from '@/lib/types'
 import { formatDate } from '@/lib/resume'
+import { stripHtml, parseLiItems } from '@/lib/html-utils'
 
 const INK   = '#0a0a0a'
 const MUTED = '#555555'
@@ -87,29 +88,8 @@ function makeStyles(font: PdfFont) {
   })
 }
 
-// ── Utilities ────────────────────────────────────────────────────────────────
-
-export function stripHtml(html: string): string {
-  return html
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<\/p>/gi, '\n')
-    .replace(/<li>/gi, '')
-    .replace(/<\/li>/gi, '\n')
-    .replace(/<[^>]+>/g, '')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim()
-}
-
-export function parseLiItems(html: string): string[] {
-  const matches = html.match(/<li[^>]*>([\s\S]*?)<\/li>/gi) ?? []
-  return matches.map((m) =>
-    m.replace(/<li[^>]*>/i, '').replace(/<\/li>/i, '').replace(/<[^>]+>/g, '').trim()
-  )
-}
+// ── Utilities (re-exported for consumers that imported from here) ─────────────
+export { stripHtml, parseLiItems } from '@/lib/html-utils'
 
 function HtmlText({ html, s }: { html: string; s: ReturnType<typeof makeStyles> }) {
   const items = parseLiItems(html)

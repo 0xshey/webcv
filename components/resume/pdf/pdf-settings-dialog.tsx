@@ -2,7 +2,7 @@
 
 import { useState, useRef, useMemo } from 'react'
 import { Reorder, useDragControls } from 'framer-motion'
-import { GripVertical, Eye, EyeOff, Download } from 'lucide-react'
+import { GripVertical, Eye, EyeOff, Download, FileText } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import {
   Dialog,
@@ -14,6 +14,8 @@ import {
 import { Button } from '@/components/ui/button'
 import type { ResumeContent, ResumeStructure, SectionKey } from '@/lib/types'
 import type { PdfFont, BasicsFields } from './resume-pdf'
+import type { DocxFont } from '@/lib/docx-generator'
+import { DocxDownloadButton } from './docx-download-button'
 
 const PdfLink = dynamic(() => import('./pdf-link').then((m) => m.PdfLink), {
   ssr: false,
@@ -43,10 +45,17 @@ const SECTION_LABELS: Record<Exclude<SectionKey, 'basics'>, string> = {
   certificates: 'Certificates',
 }
 
-const FONTS: { id: PdfFont; label: string; description: string; style: string }[] = [
-  { id: 'Helvetica',   label: 'Helvetica', description: 'Sans-serif', style: 'Helvetica, Arial, sans-serif'       },
-  { id: 'Times-Roman', label: 'Times',     description: 'Serif',      style: '"Times New Roman", Times, serif'    },
-  { id: 'Courier',     label: 'Courier',   description: 'Monospace',  style: '"Courier New", Courier, monospace'  },
+const PDF_FONTS: { id: PdfFont; label: string; description: string; style: string }[] = [
+  { id: 'Helvetica',   label: 'Helvetica', description: 'Sans-serif', style: 'Helvetica, Arial, sans-serif'      },
+  { id: 'Times-Roman', label: 'Times',     description: 'Serif',      style: '"Times New Roman", Times, serif'   },
+  { id: 'Courier',     label: 'Courier',   description: 'Monospace',  style: '"Courier New", Courier, monospace' },
+]
+
+const DOCX_FONTS: { id: DocxFont; label: string; description: string; style: string }[] = [
+  { id: 'Calibri',  label: 'Calibri',  description: 'Modern',   style: 'Calibri, sans-serif'                   },
+  { id: 'Arial',    label: 'Arial',    description: 'Clean',    style: 'Arial, sans-serif'                      },
+  { id: 'Georgia',  label: 'Georgia',  description: 'Serif',    style: 'Georgia, serif'                         },
+  { id: 'Tahoma',   label: 'Tahoma',   description: 'Compact',  style: 'Tahoma, sans-serif'                     },
 ]
 
 interface PdfSection {
@@ -58,11 +67,7 @@ function ToggleRow({ label, visible, onToggle }: { label: string; visible: boole
   return (
     <div className={`flex items-center gap-2 rounded-md px-2 py-1.5 bg-muted/40 transition-opacity ${!visible ? 'opacity-40' : ''}`}>
       <span className="flex-1 text-sm">{label}</span>
-      <button
-        type="button"
-        onClick={onToggle}
-        className="text-muted-foreground/50 hover:text-muted-foreground transition-colors"
-      >
+      <button type="button" onClick={onToggle} className="text-muted-foreground/50 hover:text-muted-foreground transition-colors">
         {visible ? <Eye size={13} /> : <EyeOff size={13} />}
       </button>
     </div>
@@ -72,7 +77,6 @@ function ToggleRow({ label, visible, onToggle }: { label: string; visible: boole
 function SectionRow({ section, onToggle }: { section: PdfSection; onToggle: () => void }) {
   const dragControls = useDragControls()
   const didDragRef = useRef(false)
-
   return (
     <Reorder.Item
       as="div"
@@ -81,9 +85,7 @@ function SectionRow({ section, onToggle }: { section: PdfSection; onToggle: () =
       dragListener={false}
       whileDrag={{ scale: 1.01, opacity: 0.9, zIndex: 50 }}
       transition={{ duration: 0.12 }}
-      className={`flex items-center gap-2 rounded-md px-2 py-1.5 bg-muted/40 select-none transition-opacity ${
-        !section.visible ? 'opacity-40' : ''
-      }`}
+      className={`flex items-center gap-2 rounded-md px-2 py-1.5 bg-muted/40 select-none transition-opacity ${!section.visible ? 'opacity-40' : ''}`}
     >
       <button
         type="button"
@@ -95,11 +97,7 @@ function SectionRow({ section, onToggle }: { section: PdfSection; onToggle: () =
         <GripVertical size={13} />
       </button>
       <span className="flex-1 text-sm">{SECTION_LABELS[section.key]}</span>
-      <button
-        type="button"
-        onClick={onToggle}
-        className="text-muted-foreground/50 hover:text-muted-foreground transition-colors flex-shrink-0"
-      >
+      <button type="button" onClick={onToggle} className="text-muted-foreground/50 hover:text-muted-foreground transition-colors flex-shrink-0">
         {section.visible ? <Eye size={13} /> : <EyeOff size={13} />}
       </button>
     </Reorder.Item>
@@ -116,7 +114,9 @@ interface PdfSettingsDialogProps {
 export function PdfSettingsDialog({ open, onOpenChange, content, structure }: PdfSettingsDialogProps) {
   const { basics } = content
 
-  const [font, setFont] = useState<PdfFont>('Helvetica')
+  const [format, setFormat] = useState<'docx' | 'pdf'>('docx')
+  const [pdfFont, setPdfFont] = useState<PdfFont>('Helvetica')
+  const [docxFont, setDocxFont] = useState<DocxFont>('Calibri')
   const [basicsFields, setBasicsFields] = useState<BasicsFields>({ summary: true, email: true, phone: true, url: true })
   const [sections, setSections] = useState<PdfSection[]>(() =>
     structure.sections
@@ -132,41 +132,66 @@ export function PdfSettingsDialog({ open, onOpenChange, content, structure }: Pd
 
   const pdfStructure = useMemo<ResumeStructure>(() => ({
     ...structure,
-    sections: [
-      { key: 'basics', visible: true },
-      ...sections,
-    ],
+    sections: [{ key: 'basics', visible: true }, ...sections],
   }), [structure, sections])
+
+  const activeFonts = format === 'pdf' ? PDF_FONTS : DOCX_FONTS
+  const activeFont  = format === 'pdf' ? pdfFont   : docxFont
+  const setActiveFont = (id: string) =>
+    format === 'pdf' ? setPdfFont(id as PdfFont) : setDocxFont(id as DocxFont)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className="sm:max-w-[820px] p-0 gap-0 overflow-hidden"
-        showCloseButton={false}
-      >
+      <DialogContent className="sm:max-w-[820px] p-0 gap-0 overflow-hidden" showCloseButton={false}>
         <div className="flex h-[620px]">
 
           {/* ── Left: controls ── */}
           <div className="flex flex-col w-72 flex-shrink-0 border-r">
-            {/* Scrollable content */}
             <div className="flex-1 overflow-y-auto px-5 py-5 flex flex-col gap-5">
 
               <DialogHeader>
-                <DialogTitle>Export PDF</DialogTitle>
-                <DialogDescription>Customise before downloading.</DialogDescription>
+                <DialogTitle>Export Resume</DialogTitle>
+                <DialogDescription>Choose format and customise before downloading.</DialogDescription>
               </DialogHeader>
+
+              {/* Format selector */}
+              <div className="flex flex-col gap-2">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Format</p>
+                <div className="grid grid-cols-2 gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setFormat('docx')}
+                    className={`flex flex-col items-start gap-0.5 rounded-md border px-3 py-2.5 transition-colors text-left ${
+                      format === 'docx' ? 'border-foreground bg-muted' : 'border-border bg-muted/20 hover:bg-muted/50'
+                    }`}
+                  >
+                    <span className="text-sm font-medium">DOCX</span>
+                    <span className="text-[10px] text-muted-foreground">ATS recommended</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormat('pdf')}
+                    className={`flex flex-col items-start gap-0.5 rounded-md border px-3 py-2.5 transition-colors text-left ${
+                      format === 'pdf' ? 'border-foreground bg-muted' : 'border-border bg-muted/20 hover:bg-muted/50'
+                    }`}
+                  >
+                    <span className="text-sm font-medium">PDF</span>
+                    <span className="text-[10px] text-muted-foreground">Formatted layout</span>
+                  </button>
+                </div>
+              </div>
 
               {/* Font */}
               <div className="flex flex-col gap-2">
                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Font</p>
-                <div className="grid grid-cols-3 gap-1.5">
-                  {FONTS.map((f) => (
+                <div className={`grid gap-1.5 ${activeFonts.length === 4 ? 'grid-cols-4' : 'grid-cols-3'}`}>
+                  {activeFonts.map((f) => (
                     <button
                       key={f.id}
                       type="button"
-                      onClick={() => setFont(f.id)}
+                      onClick={() => setActiveFont(f.id)}
                       className={`flex flex-col items-center gap-1 rounded-md border py-2.5 transition-colors ${
-                        font === f.id
+                        activeFont === f.id
                           ? 'border-foreground bg-muted'
                           : 'border-border bg-muted/20 hover:bg-muted/50'
                       }`}
@@ -192,13 +217,7 @@ export function PdfSettingsDialog({ open, onOpenChange, content, structure }: Pd
               {/* Sections */}
               <div className="flex flex-col gap-1.5">
                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Sections</p>
-                <Reorder.Group
-                  as="div"
-                  axis="y"
-                  values={sections}
-                  onReorder={setSections}
-                  className="flex flex-col gap-1"
-                >
+                <Reorder.Group as="div" axis="y" values={sections} onReorder={setSections} className="flex flex-col gap-1">
                   {sections.map((sec) => (
                     <SectionRow key={sec.key} section={sec} onToggle={() => toggleSection(sec.key)} />
                   ))}
@@ -208,25 +227,50 @@ export function PdfSettingsDialog({ open, onOpenChange, content, structure }: Pd
 
             {/* Sticky download */}
             <div className="px-5 py-4 border-t flex-shrink-0">
-              <PdfLink content={content} structure={pdfStructure} font={font} basicsFields={basicsFields}>
-                {({ loading }) => (
-                  <Button className="w-full" disabled={loading}>
-                    <Download size={13} />
-                    {loading ? 'Preparing…' : 'Download PDF'}
-                  </Button>
-                )}
-              </PdfLink>
+              {format === 'docx' ? (
+                <DocxDownloadButton
+                  className="w-full"
+                  content={content}
+                  structure={pdfStructure}
+                  basicsFields={basicsFields}
+                  font={docxFont}
+                />
+              ) : (
+                <PdfLink content={content} structure={pdfStructure} font={pdfFont} basicsFields={basicsFields}>
+                  {({ loading }) => (
+                    <Button className="w-full" disabled={loading}>
+                      <Download size={13} />
+                      {loading ? 'Preparing…' : 'Download PDF'}
+                    </Button>
+                  )}
+                </PdfLink>
+              )}
             </div>
           </div>
 
           {/* ── Right: preview ── */}
-          <div className="flex-1 bg-muted/20 hidden sm:block relative">
-            <PdfPreview
-              content={content}
-              structure={pdfStructure}
-              font={font}
-              basicsFields={basicsFields}
-            />
+          <div className="flex-1 hidden sm:flex flex-col bg-muted/20">
+            {format === 'pdf' ? (
+              <PdfPreview
+                content={content}
+                structure={pdfStructure}
+                font={pdfFont}
+                basicsFields={basicsFields}
+              />
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full gap-3 text-center px-8">
+                <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                  <FileText size={18} className="text-muted-foreground" />
+                </div>
+                <p className="text-sm font-medium">DOCX preview unavailable</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Live preview is only supported for PDF. Your DOCX will follow ATS best practices — single column, standard font, months in all dates.
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Switch to <button type="button" onClick={() => setFormat('pdf')} className="underline underline-offset-2 hover:text-foreground transition-colors">PDF</button> to see a preview.
+                </p>
+              </div>
+            )}
           </div>
 
         </div>
