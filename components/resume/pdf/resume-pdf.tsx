@@ -163,15 +163,24 @@ const SECTION_LABELS: Record<SectionKey, string> = {
 
 // ── Main component ───────────────────────────────────────────────────────────
 
+export interface BasicsFields {
+  summary: boolean
+  email: boolean
+  phone: boolean
+  url: boolean
+}
+
 interface ResumePDFProps {
   content: ResumeContent
   structure: ResumeStructure
   font?: PdfFont
+  basicsFields?: BasicsFields
 }
 
-export function ResumePDF({ content, structure, font = 'Helvetica' }: ResumePDFProps) {
+export function ResumePDF({ content, structure, font = 'Helvetica', basicsFields }: ResumePDFProps) {
   const { basics } = content
   const s = makeStyles(font)
+  const bf: BasicsFields = { summary: true, email: true, phone: true, url: true, ...basicsFields }
 
   const dateRange = (start?: string, end?: string) =>
     [start ? formatDate(start) : null, end ? formatDate(end) : 'Present']
@@ -186,15 +195,15 @@ export function ResumePDF({ content, structure, font = 'Helvetica' }: ResumePDFP
           <Text style={s.name}>{basics.name?.toUpperCase()}</Text>
 
           <ContactLine s={s} items={[
-            basics.phone
+            (basics.phone && bf.phone)
               ? <Link key="phone" src={`tel:${basics.phone}`} style={s.contactLink}>{basics.phone}</Link>
               : '',
-            basics.email
+            (basics.email && bf.email)
               ? <Link key="email" src={`mailto:${basics.email}`} style={s.contactLink}>{basics.email}</Link>
               : '',
           ]} />
 
-          {basics.url && (
+          {(basics.url && bf.url) && (
             <ContactLine s={s} items={[
               <Link key="url" src={basics.url} style={s.contactLink}>
                 {basics.url.replace(/^https?:\/\//, '')}
@@ -204,7 +213,7 @@ export function ResumePDF({ content, structure, font = 'Helvetica' }: ResumePDFP
         </View>
 
         {/* Summary */}
-        {basics.summary && (
+        {(basics.summary && bf.summary) && (
           <View style={s.section}>
             <Text style={s.sectionTitle}>{'Summary'.toUpperCase()}</Text>
             <HtmlText s={s} html={basics.summary} />

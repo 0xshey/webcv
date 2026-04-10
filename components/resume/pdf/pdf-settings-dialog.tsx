@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import type { ResumeContent, ResumeStructure, SectionKey } from '@/lib/types'
-import type { PdfFont } from './resume-pdf'
+import type { PdfFont, BasicsFields } from './resume-pdf'
 
 const PdfLink = dynamic(() => import('./pdf-link').then((m) => m.PdfLink), {
   ssr: false,
@@ -35,14 +35,37 @@ const SECTION_LABELS: Record<Exclude<SectionKey, 'basics'>, string> = {
 }
 
 const FONTS: { id: PdfFont; label: string; sample: string; description: string }[] = [
-  { id: 'Helvetica',   label: 'Helvetica',  sample: 'Aa',  description: 'Sans-serif' },
-  { id: 'Times-Roman', label: 'Times',      sample: 'Aa',  description: 'Serif' },
-  { id: 'Courier',     label: 'Courier',    sample: 'Aa',  description: 'Monospace' },
+  { id: 'Helvetica',   label: 'Helvetica', sample: 'Aa', description: 'Sans-serif' },
+  { id: 'Times-Roman', label: 'Times',     sample: 'Aa', description: 'Serif'      },
+  { id: 'Courier',     label: 'Courier',   sample: 'Aa', description: 'Monospace'  },
 ]
 
 interface PdfSection {
   key: Exclude<SectionKey, 'basics'>
   visible: boolean
+}
+
+function ToggleRow({
+  label,
+  visible,
+  onToggle,
+}: {
+  label: string
+  visible: boolean
+  onToggle: () => void
+}) {
+  return (
+    <div className={`flex items-center gap-2.5 rounded-md px-2 py-2 bg-muted/50 ${!visible ? 'opacity-40' : ''}`}>
+      <span className="flex-1 text-sm">{label}</span>
+      <button
+        type="button"
+        onClick={onToggle}
+        className="text-muted-foreground/50 hover:text-muted-foreground transition-colors flex-shrink-0"
+      >
+        {visible ? <Eye size={14} /> : <EyeOff size={14} />}
+      </button>
+    </div>
+  )
 }
 
 function SectionRow({
@@ -106,18 +129,26 @@ export function PdfSettingsDialog({
   content,
   structure,
 }: PdfSettingsDialogProps) {
+  const { basics } = content
+
   const [font, setFont] = useState<PdfFont>('Helvetica')
+  const [basicsFields, setBasicsFields] = useState<BasicsFields>({
+    summary: true,
+    email: true,
+    phone: true,
+    url: true,
+  })
   const [sections, setSections] = useState<PdfSection[]>(() =>
     structure.sections
       .filter((s): s is { key: Exclude<SectionKey, 'basics'>; visible: boolean } => s.key !== 'basics')
       .map((s) => ({ key: s.key as Exclude<SectionKey, 'basics'>, visible: s.visible }))
   )
 
-  const toggleSection = (key: Exclude<SectionKey, 'basics'>) => {
-    setSections((prev) =>
-      prev.map((s) => (s.key === key ? { ...s, visible: !s.visible } : s))
-    )
-  }
+  const toggleBasics = (field: keyof BasicsFields) =>
+    setBasicsFields((prev) => ({ ...prev, [field]: !prev[field] }))
+
+  const toggleSection = (key: Exclude<SectionKey, 'basics'>) =>
+    setSections((prev) => prev.map((s) => (s.key === key ? { ...s, visible: !s.visible } : s)))
 
   const pdfStructure: ResumeStructure = {
     ...structure,
@@ -129,11 +160,11 @@ export function PdfSettingsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-sm gap-6">
+      <DialogContent className="sm:max-w-sm gap-6 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Export PDF</DialogTitle>
           <DialogDescription>
-            Customise font and section order before downloading.
+            Customise font and sections before downloading.
           </DialogDescription>
         </DialogHeader>
 
@@ -170,6 +201,25 @@ export function PdfSettingsDialog({
           </div>
         </div>
 
+        {/* Basics fields */}
+        <div className="flex flex-col gap-2">
+          <p className="text-sm font-medium">Header</p>
+          <div className="flex flex-col gap-1.5">
+            {basics.email && (
+              <ToggleRow label="Email" visible={basicsFields.email} onToggle={() => toggleBasics('email')} />
+            )}
+            {basics.phone && (
+              <ToggleRow label="Phone" visible={basicsFields.phone} onToggle={() => toggleBasics('phone')} />
+            )}
+            {basics.url && (
+              <ToggleRow label="Website" visible={basicsFields.url} onToggle={() => toggleBasics('url')} />
+            )}
+            {basics.summary && (
+              <ToggleRow label="Summary" visible={basicsFields.summary} onToggle={() => toggleBasics('summary')} />
+            )}
+          </div>
+        </div>
+
         {/* Section list */}
         <div className="flex flex-col gap-2">
           <p className="text-sm font-medium">Sections</p>
@@ -191,7 +241,7 @@ export function PdfSettingsDialog({
         </div>
 
         {/* Download */}
-        <PdfLink content={content} structure={pdfStructure} font={font}>
+        <PdfLink content={content} structure={pdfStructure} font={font} basicsFields={basicsFields}>
           {({ loading }) => (
             <Button className="w-full" disabled={loading}>
               <Download size={14} />
