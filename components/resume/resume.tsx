@@ -1,12 +1,13 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import { useState } from "react";
 import { Pencil, Save, Download } from "lucide-react";
 import { useResume } from "@/components/providers/resume-provider";
 import { Button } from "@/components/ui/button";
 import { SectionHeader } from "./section/header";
 import { BasicsEditor } from "./basics/editor";
 import { SortableSection } from "./section/sortable";
+import { PdfSettingsDialog } from "./pdf/pdf-settings-dialog";
 import {
 	WorkBlock,
 	EducationBlock,
@@ -38,11 +39,6 @@ import type {
 	ResumeReferenceItem,
 	ResumeCertificateItem,
 } from "@/lib/types";
-
-const PdfLink = dynamic(() => import("./pdf/pdf-link").then((m) => m.PdfLink), {
-	ssr: false,
-	loading: () => null,
-});
 
 function BasicsView() {
 	const { content } = useResume();
@@ -148,20 +144,21 @@ export function Resume() {
 		saveAndExit,
 	} = useResume();
 
+	const [pdfDialogOpen, setPdfDialogOpen] = useState(false);
+
 	return (
 		<div className="flex flex-col gap-8">
 			{/* Actions bar */}
 			<div className="flex items-center justify-between">
 				<div>
 					{!isEditMode && (
-						<PdfLink content={content} structure={structure}>
-							{({ loading }) => (
-								<Button variant="secondary" disabled={loading}>
-									<Download />
-									{loading ? "Preparing…" : "Download"}
-								</Button>
-							)}
-						</PdfLink>
+						<Button
+							variant="secondary"
+							onClick={() => setPdfDialogOpen(true)}
+						>
+							<Download />
+							Download
+						</Button>
 					)}
 				</div>
 
@@ -183,6 +180,13 @@ export function Resume() {
 					)}
 				</div>
 			</div>
+
+			<PdfSettingsDialog
+				open={pdfDialogOpen}
+				onOpenChange={setPdfDialogOpen}
+				content={content}
+				structure={structure}
+			/>
 
 			{/* Resume content */}
 			<div

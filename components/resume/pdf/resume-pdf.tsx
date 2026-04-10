@@ -9,72 +9,83 @@ import {
 import type { ResumeContent, ResumeStructure, SectionKey } from '@/lib/types'
 import { formatDate } from '@/lib/resume'
 
-const INK  = '#0a0a0a'
+const INK   = '#0a0a0a'
 const MUTED = '#555555'
 
-const s = StyleSheet.create({
-  page: {
-    fontFamily: 'Helvetica',
-    fontSize: 10,
-    paddingTop: 38,
-    paddingBottom: 38,
-    paddingHorizontal: 48,
-    color: INK,
-    lineHeight: 1.35,
-  },
+export type PdfFont = 'Helvetica' | 'Times-Roman' | 'Courier'
 
-  // ── Header ──────────────────────────────────────────────────
-  header: { alignItems: 'center', marginBottom: 10 },
-  name: {
-    fontFamily: 'Helvetica-Bold',
-    fontSize: 20,
-    letterSpacing: 2,
-    marginBottom: 5,
-  },
-  contactLine: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    marginBottom: 1,
-  },
-  contactItem: { fontSize: 9, color: MUTED },
-  contactLink: { fontSize: 9, color: MUTED, textDecoration: 'none' },
-  dot: { fontSize: 9, color: '#aaa', marginHorizontal: 4 },
+function getFontFamily(font: PdfFont) {
+  if (font === 'Times-Roman') return { normal: 'Times-Roman', bold: 'Times-Bold',    italic: 'Times-Italic'    }
+  if (font === 'Courier')     return { normal: 'Courier',     bold: 'Courier-Bold',  italic: 'Courier-Oblique' }
+  return                             { normal: 'Helvetica',   bold: 'Helvetica-Bold', italic: 'Helvetica-Oblique' }
+}
 
-  // ── Section title ────────────────────────────────────────────
-  section: { marginTop: 10 },
-  sectionTitle: {
-    fontFamily: 'Helvetica-Bold',
-    fontSize: 11,
-    letterSpacing: 0.6,
-    paddingBottom: 2,
-    marginBottom: 5,
-    borderBottomWidth: 0.75,
-    borderBottomColor: INK,
-  },
+function makeStyles(font: PdfFont) {
+  const f = getFontFamily(font)
+  return StyleSheet.create({
+    page: {
+      fontFamily: f.normal,
+      fontSize: 10,
+      paddingTop: 38,
+      paddingBottom: 38,
+      paddingHorizontal: 48,
+      color: INK,
+      lineHeight: 1.35,
+    },
 
-  // ── Entry block ──────────────────────────────────────────────
-  block: { marginBottom: 6 },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-  },
-  orgName:  { fontFamily: 'Helvetica-Bold', fontSize: 10 },
-  roleText: { fontFamily: 'Helvetica-Oblique', fontSize: 9, color: MUTED, marginTop: 1 },
-  dateText: { fontSize: 9, color: MUTED },
+    // ── Header ──────────────────────────────────────────────────
+    header: { alignItems: 'center', marginBottom: 10 },
+    name: {
+      fontFamily: f.bold,
+      fontSize: 20,
+      letterSpacing: 2,
+      marginBottom: 5,
+    },
+    contactLine: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      flexWrap: 'wrap',
+      marginBottom: 1,
+    },
+    contactItem: { fontSize: 9, color: MUTED },
+    contactLink: { fontSize: 9, color: MUTED, textDecoration: 'none' },
+    dot: { fontSize: 9, color: '#aaa', marginHorizontal: 4 },
 
-  // ── Body / bullets ───────────────────────────────────────────
-  body: { fontSize: 9, lineHeight: 1.45, marginTop: 2 },
-  bullet: { flexDirection: 'row', marginTop: 2 },
-  bulletDot:  { width: 10, fontSize: 8, color: MUTED },
-  bulletText: { flex: 1, fontSize: 9, lineHeight: 1.4 },
+    // ── Section title ────────────────────────────────────────────
+    section: { marginTop: 10 },
+    sectionTitle: {
+      fontFamily: f.bold,
+      fontSize: 11,
+      letterSpacing: 0.6,
+      paddingBottom: 2,
+      marginBottom: 5,
+      borderBottomWidth: 0.75,
+      borderBottomColor: INK,
+    },
 
-  // ── Inline label+value (skills) ──────────────────────────────
-  inlineRow: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 3 },
-  inlineLabel: { fontFamily: 'Helvetica-Bold', fontSize: 9 },
-  inlineValue: { fontSize: 9 },
-})
+    // ── Entry block ──────────────────────────────────────────────
+    block: { marginBottom: 6 },
+    row: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+    },
+    orgName:  { fontFamily: f.bold,   fontSize: 10 },
+    roleText: { fontFamily: f.italic, fontSize: 9, color: MUTED, marginTop: 1 },
+    dateText: { fontSize: 9, color: MUTED },
+
+    // ── Body / bullets ───────────────────────────────────────────
+    body: { fontSize: 9, lineHeight: 1.45, marginTop: 2 },
+    bullet: { flexDirection: 'row', marginTop: 2 },
+    bulletDot:  { width: 10, fontSize: 8, color: MUTED },
+    bulletText: { flex: 1, fontSize: 9, lineHeight: 1.4 },
+
+    // ── Inline label+value (skills) ──────────────────────────────
+    inlineRow: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 3 },
+    inlineLabel: { fontFamily: f.bold, fontSize: 9 },
+    inlineValue: { fontSize: 9 },
+  })
+}
 
 // ── Utilities ────────────────────────────────────────────────────────────────
 
@@ -100,7 +111,7 @@ export function parseLiItems(html: string): string[] {
   )
 }
 
-function HtmlText({ html }: { html: string }) {
+function HtmlText({ html, s }: { html: string; s: ReturnType<typeof makeStyles> }) {
   const items = parseLiItems(html)
   if (items.length > 0) {
     return (
@@ -118,7 +129,7 @@ function HtmlText({ html }: { html: string }) {
 }
 
 // Renders:  item  ·  item  ·  item  (centered)
-function ContactLine({ items }: { items: (string | React.ReactElement)[] }) {
+function ContactLine({ items, s }: { items: (string | React.ReactElement)[]; s: ReturnType<typeof makeStyles> }) {
   const nonEmpty = items.filter(Boolean)
   if (nonEmpty.length === 0) return null
   return (
@@ -131,21 +142,6 @@ function ContactLine({ items }: { items: (string | React.ReactElement)[] }) {
             : item}
         </View>
       ))}
-    </View>
-  )
-}
-
-// Bold org on left, date on right; italic role below
-function Subheading({
-  org, role, date,
-}: { org: string; role?: string; date?: string }) {
-  return (
-    <View style={s.block}>
-      <View style={s.row}>
-        <Text style={s.orgName}>{org}</Text>
-        {date && <Text style={s.dateText}>{date}</Text>}
-      </View>
-      {role && <Text style={s.roleText}>{role}</Text>}
     </View>
   )
 }
@@ -170,10 +166,12 @@ const SECTION_LABELS: Record<SectionKey, string> = {
 interface ResumePDFProps {
   content: ResumeContent
   structure: ResumeStructure
+  font?: PdfFont
 }
 
-export function ResumePDF({ content, structure }: ResumePDFProps) {
+export function ResumePDF({ content, structure, font = 'Helvetica' }: ResumePDFProps) {
   const { basics } = content
+  const s = makeStyles(font)
 
   const dateRange = (start?: string, end?: string) =>
     [start ? formatDate(start) : null, end ? formatDate(end) : 'Present']
@@ -187,7 +185,7 @@ export function ResumePDF({ content, structure }: ResumePDFProps) {
         <View style={s.header}>
           <Text style={s.name}>{basics.name?.toUpperCase()}</Text>
 
-          <ContactLine items={[
+          <ContactLine s={s} items={[
             basics.phone
               ? <Link key="phone" src={`tel:${basics.phone}`} style={s.contactLink}>{basics.phone}</Link>
               : '',
@@ -197,7 +195,7 @@ export function ResumePDF({ content, structure }: ResumePDFProps) {
           ]} />
 
           {basics.url && (
-            <ContactLine items={[
+            <ContactLine s={s} items={[
               <Link key="url" src={basics.url} style={s.contactLink}>
                 {basics.url.replace(/^https?:\/\//, '')}
               </Link>,
@@ -209,7 +207,7 @@ export function ResumePDF({ content, structure }: ResumePDFProps) {
         {basics.summary && (
           <View style={s.section}>
             <Text style={s.sectionTitle}>{'Summary'.toUpperCase()}</Text>
-            <HtmlText html={basics.summary} />
+            <HtmlText s={s} html={basics.summary} />
           </View>
         )}
 
@@ -234,7 +232,7 @@ export function ResumePDF({ content, structure }: ResumePDFProps) {
                         <Text style={s.dateText}>{dateRange(item.startDate, item.endDate)}</Text>
                       </View>
                       <Text style={s.roleText}>{item.position}</Text>
-                      {item.summary && <HtmlText html={item.summary} />}
+                      {item.summary && <HtmlText s={s} html={item.summary} />}
                     </View>
                   ))}
 
@@ -261,7 +259,7 @@ export function ResumePDF({ content, structure }: ResumePDFProps) {
                           <Text style={s.dateText}>{formatDate(item.endDate ?? item.startDate)}</Text>
                         )}
                       </View>
-                      {item.description && <HtmlText html={item.description} />}
+                      {item.description && <HtmlText s={s} html={item.description} />}
                     </View>
                   ))}
 
@@ -292,7 +290,7 @@ export function ResumePDF({ content, structure }: ResumePDFProps) {
                         <Text style={s.dateText}>{dateRange(item.startDate, item.endDate)}</Text>
                       </View>
                       <Text style={s.roleText}>{item.position}</Text>
-                      {item.summary && <HtmlText html={item.summary} />}
+                      {item.summary && <HtmlText s={s} html={item.summary} />}
                     </View>
                   ))}
 
