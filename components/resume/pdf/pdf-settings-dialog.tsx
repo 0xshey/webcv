@@ -46,9 +46,9 @@ const SECTION_LABELS: Record<Exclude<SectionKey, 'basics'>, string> = {
 }
 
 const PDF_FONTS: { id: PdfFont; label: string; description: string; style: string }[] = [
-  { id: 'Helvetica',   label: 'Helvetica', description: 'Sans-serif', style: 'Helvetica, Arial, sans-serif'      },
-  { id: 'Times-Roman', label: 'Times',     description: 'Serif',      style: '"Times New Roman", Times, serif'   },
-  { id: 'Courier',     label: 'Courier',   description: 'Monospace',  style: '"Courier New", Courier, monospace' },
+  { id: 'Times-Roman', label: 'Serif',    description: 'Default',   style: '"Times New Roman", Times, serif'   },
+  { id: 'Helvetica',   label: 'Sans',     description: 'Clean',     style: 'Helvetica, Arial, sans-serif'      },
+  { id: 'Courier',     label: 'Courier',  description: 'Monospace', style: '"Courier New", Courier, monospace' },
 ]
 
 const DOCX_FONTS: { id: DocxFont; label: string; description: string; style: string }[] = [
@@ -115,7 +115,7 @@ export function PdfSettingsDialog({ open, onOpenChange, content, structure }: Pd
   const { basics } = content
 
   const [format, setFormat] = useState<'docx' | 'pdf'>('docx')
-  const [pdfFont, setPdfFont] = useState<PdfFont>('Helvetica')
+  const [pdfFont, setPdfFont] = useState<PdfFont>('Times-Roman')
   const [docxFont, setDocxFont] = useState<DocxFont>('Calibri')
   const [basicsFields, setBasicsFields] = useState<BasicsFields>({ summary: true, email: true, phone: true, url: true })
   const [sections, setSections] = useState<PdfSection[]>(() =>

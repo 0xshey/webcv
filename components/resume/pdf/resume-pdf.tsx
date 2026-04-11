@@ -157,7 +157,7 @@ interface ResumePDFProps {
   basicsFields?: BasicsFields
 }
 
-export function ResumePDF({ content, structure, font = 'Helvetica', basicsFields }: ResumePDFProps) {
+export function ResumePDF({ content, structure, font = 'Times-Roman', basicsFields }: ResumePDFProps) {
   const { basics } = content
   const s = makeStyles(font)
   const bf: BasicsFields = { summary: true, email: true, phone: true, url: true, ...basicsFields }
