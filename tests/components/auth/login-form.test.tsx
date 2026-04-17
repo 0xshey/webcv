@@ -15,7 +15,10 @@ vi.mock('@/lib/supabase/client', () => ({
         data: { subscription: { unsubscribe: vi.fn() } },
       }),
     },
-    from: () => ({ update: () => ({ eq: vi.fn().mockResolvedValue({ error: null }) }) }),
+    from: () => ({
+      update: () => ({ eq: vi.fn().mockResolvedValue({ error: null }) }),
+      select: () => ({ eq: () => ({ single: () => Promise.resolve({ data: { username: 'johndoe' } }) }) }),
+    }),
   }),
 }))
 
@@ -35,7 +38,7 @@ describe('LoginForm', () => {
       forward: vi.fn(),
       prefetch: vi.fn(),
     })
-    mockSignIn.mockResolvedValue({ error: null })
+    mockSignIn.mockResolvedValue({ data: { user: { id: 'user-123' } }, error: null })
   })
 
   it('renders email and password inputs and submit button', () => {
@@ -78,14 +81,14 @@ describe('LoginForm', () => {
     })
   })
 
-  it('calls router.push("/dashboard") on successful login', async () => {
+  it('calls router.push("/<username>") on successful login', async () => {
     const user = userEvent.setup()
     render(<LoginForm />)
     await user.type(screen.getByLabelText('Email'), 'user@example.com')
     await user.type(screen.getByLabelText('Password'), 'mypassword')
     await user.click(screen.getByRole('button', { name: /sign in/i }))
     await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith('/dashboard')
+      expect(mockPush).toHaveBeenCalledWith('/johndoe')
     })
   })
 
@@ -133,6 +136,13 @@ describe('LoginForm', () => {
     await user.type(screen.getByLabelText('Password'), 'mypassword')
     await user.click(screen.getByRole('button', { name: /sign in/i }))
     expect(screen.getByRole('button')).toHaveTextContent(/signing in/i)
-    resolveSignIn({ error: null })
+    resolveSignIn({ data: { user: { id: 'user-123' } }, error: null })
+  })
+
+  it('renders a "Forgot password?" link pointing to /forgot-password', () => {
+    render(<LoginForm />)
+    const link = screen.getByRole('link', { name: /forgot password/i })
+    expect(link).toBeInTheDocument()
+    expect((link as HTMLAnchorElement).getAttribute('href')).toBe('/forgot-password')
   })
 })
