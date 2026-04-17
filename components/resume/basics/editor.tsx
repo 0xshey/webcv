@@ -24,6 +24,8 @@ function BareInput({
 
 export function BasicsEditor() {
   const { content, dispatch } = useResume()
+  const dispatchRef = useRef(dispatch)
+  dispatchRef.current = dispatch
 
   const {
     register,
@@ -42,16 +44,12 @@ export function BasicsEditor() {
     },
   })
 
-  const values = watch()
-  const isFirstRender = useRef(true)
-
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false
-      return
-    }
-    dispatch({ type: 'UPDATE_BASICS', payload: values })
-  }, [JSON.stringify(values)]) // eslint-disable-line react-hooks/exhaustive-deps
+    const { unsubscribe } = watch((values) => {
+      dispatchRef.current({ type: 'UPDATE_BASICS', payload: values })
+    })
+    return unsubscribe
+  }, [watch]) // watch is stable for the lifetime of the form instance
 
   return (
     <div className="flex flex-col gap-2.5">

@@ -5,6 +5,7 @@ import { Globe, Mail, Phone, ArrowUpRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatDate, formatDateShort } from "@/lib/resume";
 import type {
+	SectionKey,
 	ResumeWorkItem,
 	ResumeEducationItem,
 	ResumeSkillItem,
@@ -299,4 +300,20 @@ export function CertificateBlock({ item }: { item: ResumeCertificateItem }) {
 			<p className="text-muted-foreground">{item.issuer}</p>
 		</div>
 	);
+}
+
+// Registry mapping section keys to their view components
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const BLOCK_COMPONENTS: Record<Exclude<SectionKey, "basics">, React.ComponentType<{ item: any }>> = {
+	work: WorkBlock,
+	education: EducationBlock,
+	skills: SkillBlock,
+	projects: ProjectBlock,
+	volunteer: VolunteerBlock,
+	awards: AwardBlock,
+	publications: PublicationBlock,
+	languages: LanguageBlock,
+	interests: InterestBlock,
+	references: ReferenceBlock,
+	certificates: CertificateBlock,
 }
