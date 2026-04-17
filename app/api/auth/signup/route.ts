@@ -1,10 +1,36 @@
 import { createClient } from '@supabase/supabase-js'
-import { createBrowserClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import { signupSchema } from '@/lib/validations/profile'
 import { env } from '@/env'
 
+// ── In-memory rate limiter (sliding window per IP) ────────────────────────────
+// Per-instance only — sufficient for Vercel (each instance is isolated).
+// Swap the Map for Upstash Redis for stronger cross-instance protection.
+const _attempts = new Map<string, { count: number; resetAt: number }>()
+const WINDOW_MS = 15 * 60 * 1000 // 15 minutes
+const MAX_ATTEMPTS = 5
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now()
+  const entry = _attempts.get(ip)
+  if (!entry || now > entry.resetAt) {
+    _attempts.set(ip, { count: 1, resetAt: now + WINDOW_MS })
+    return true
+  }
+  if (entry.count >= MAX_ATTEMPTS) return false
+  entry.count++
+  return true
+}
+
 export async function POST(request: Request) {
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? '127.0.0.1'
+  if (!checkRateLimit(ip)) {
+    return NextResponse.json(
+      { error: 'Too many requests. Try again later.' },
+      { status: 429 }
+    )
+  }
+
   const body: unknown = await request.json()
   const parsed = signupSchema.safeParse(body)
 
@@ -37,12 +63,12 @@ export async function POST(request: Request) {
     )
   }
 
-  // Create user (no email confirmation)
+  // Create user — email_confirm: false so Supabase sends the OTP verification email
   const { data: userData, error: createError } =
     await adminClient.auth.admin.createUser({
       email,
       password,
-      email_confirm: true,
+      email_confirm: false,
     })
 
   if (createError || !userData.user) {
@@ -67,21 +93,6 @@ export async function POST(request: Request) {
     )
   }
 
-  // Sign in to get session tokens
-  const browserClient = createBrowserClient(
-    env.NEXT_PUBLIC_SUPABASE_URL,
-    env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  )
-
-  const { data: signInData, error: signInError } =
-    await browserClient.auth.signInWithPassword({ email, password })
-
-  if (signInError || !signInData.session) {
-    return NextResponse.json(
-      { error: 'Account created but sign-in failed. Please log in.' },
-      { status: 200 }
-    )
-  }
-
-  return NextResponse.json({ session: signInData.session }, { status: 201 })
+  // Return email so the client can redirect to the OTP verification page
+  return NextResponse.json({ status: 'verify', email }, { status: 201 })
 }

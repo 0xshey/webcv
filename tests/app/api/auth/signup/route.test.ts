@@ -5,7 +5,6 @@ const mockMaybeSingle = vi.hoisted(() => vi.fn())
 const mockInsert = vi.hoisted(() => vi.fn())
 const mockAdminCreateUser = vi.hoisted(() => vi.fn())
 const mockAdminDeleteUser = vi.hoisted(() => vi.fn())
-const mockSignIn = vi.hoisted(() => vi.fn())
 
 vi.mock('@supabase/supabase-js', () => ({
   createClient: vi.fn().mockReturnValue({
@@ -32,27 +31,27 @@ vi.mock('@supabase/supabase-js', () => ({
 }))
 
 vi.mock('@supabase/ssr', () => ({
-  createBrowserClient: vi.fn().mockReturnValue({
-    auth: {
-      signInWithPassword: mockSignIn,
-    },
-  }),
   createServerClient: vi.fn(),
 }))
 
 import { POST } from '@/app/api/auth/signup/route'
 
-function makeRequest(body: unknown) {
+// Each test group gets a unique IP to avoid rate-limit bleed between tests
+let ipCounter = 0
+function makeRequest(body: unknown, ip?: string) {
   return new Request('http://localhost/api/auth/signup', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'x-forwarded-for': ip ?? `10.${Math.floor(ipCounter / 255)}.${ipCounter++ % 255}.1`,
+    },
     body: JSON.stringify(body),
   })
 }
 
 const validBody = {
   email: 'user@example.com',
-  password: 'password123',
+  password: 'Password1',
   username: 'johndoe',
 }
 
@@ -65,9 +64,63 @@ describe('POST /api/auth/signup', () => {
       error: null,
     })
     mockInsert.mockResolvedValue({ error: null })
-    mockSignIn.mockResolvedValue({
-      data: { session: { access_token: 'access', refresh_token: 'refresh' } },
-      error: null,
+  })
+
+  describe('rate limiting', () => {
+    it('allows requests below the limit', async () => {
+      const ip = '192.168.99.1'
+      const res = await POST(makeRequest(validBody, ip))
+      expect(res.status).not.toBe(429)
+    })
+
+    it('returns 429 after MAX_ATTEMPTS requests from the same IP', async () => {
+      const ip = '192.168.99.2'
+      // Exhaust the 5 allowed attempts
+      for (let i = 0; i < 5; i++) {
+        await POST(makeRequest(validBody, ip))
+      }
+      // 6th request should be blocked
+      const res = await POST(makeRequest(validBody, ip))
+      expect(res.status).toBe(429)
+      const body = await res.json() as { error: string }
+      expect(body.error).toMatch(/too many requests/i)
+    })
+
+    it('does not count attempts from different IPs against each other', async () => {
+      const ip1 = '192.168.99.3'
+      const ip2 = '192.168.99.4'
+      // Exhaust ip1's limit
+      for (let i = 0; i < 5; i++) {
+        await POST(makeRequest(validBody, ip1))
+      }
+      // ip2 should still be allowed
+      const res = await POST(makeRequest(validBody, ip2))
+      expect(res.status).not.toBe(429)
+    })
+
+    it('reads IP from x-forwarded-for (first value if comma-separated)', async () => {
+      const ip = '192.168.99.5'
+      // Exhaust limit using the real IP (first in the header)
+      for (let i = 0; i < 5; i++) {
+        await POST(new Request('http://localhost/api/auth/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-forwarded-for': `${ip}, 10.0.0.1`,
+          },
+          body: JSON.stringify(validBody),
+        }))
+      }
+      // 6th with same real IP
+      const res = await POST(new Request('http://localhost/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-forwarded-for': `${ip}, 10.0.0.2`,
+        },
+        body: JSON.stringify(validBody),
+      }))
+      expect(res.status).toBe(429)
     })
   })
 
@@ -85,8 +138,22 @@ describe('POST /api/auth/signup', () => {
     })
 
     it('returns 400 when password is too short', async () => {
-      const res = await POST(makeRequest({ ...validBody, password: 'short' }))
+      const res = await POST(makeRequest({ ...validBody, password: 'Pass1' }))
       expect(res.status).toBe(400)
+    })
+
+    it('returns 400 when password lacks uppercase letter', async () => {
+      const res = await POST(makeRequest({ ...validBody, password: 'password1' }))
+      expect(res.status).toBe(400)
+      const body = await res.json() as { error: string }
+      expect(body.error).toMatch(/uppercase/i)
+    })
+
+    it('returns 400 when password lacks a number', async () => {
+      const res = await POST(makeRequest({ ...validBody, password: 'Password' }))
+      expect(res.status).toBe(400)
+      const body = await res.json() as { error: string }
+      expect(body.error).toMatch(/number/i)
     })
 
     it('returns 400 when body is missing required fields', async () => {
@@ -148,27 +215,20 @@ describe('POST /api/auth/signup', () => {
     })
   })
 
-  describe('sign-in', () => {
-    it('returns 200 with error message when sign-in fails after profile creation', async () => {
-      mockSignIn.mockResolvedValue({ data: { session: null }, error: { message: 'Sign-in failed' } })
-      const res = await POST(makeRequest(validBody))
-      expect(res.status).toBe(200)
-      const body = await res.json() as { error: string }
-      expect(body.error).toContain('sign-in failed')
-    })
-
-    it('returns 201 with session object on fully successful signup', async () => {
+  describe('successful signup', () => {
+    it('returns 201 with status "verify" and email on success', async () => {
       const res = await POST(makeRequest(validBody))
       expect(res.status).toBe(201)
-      const body = await res.json() as { session: { access_token: string; refresh_token: string } }
-      expect(body.session).toBeDefined()
+      const body = await res.json() as { status: string; email: string }
+      expect(body.status).toBe('verify')
+      expect(body.email).toBe(validBody.email)
     })
 
-    it('the session in the response contains access_token and refresh_token', async () => {
-      const res = await POST(makeRequest(validBody))
-      const body = await res.json() as { session: { access_token: string; refresh_token: string } }
-      expect(body.session.access_token).toBe('access')
-      expect(body.session.refresh_token).toBe('refresh')
+    it('creates user with email_confirm: false so OTP email is sent', async () => {
+      await POST(makeRequest(validBody))
+      expect(mockAdminCreateUser).toHaveBeenCalledWith(
+        expect.objectContaining({ email_confirm: false })
+      )
     })
   })
 })

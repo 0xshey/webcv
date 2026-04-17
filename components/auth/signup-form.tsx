@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
-import { createClient } from '@/lib/supabase/client'
 import { signupSchema, type SignupFormValues } from '@/lib/validations/profile'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -44,26 +43,10 @@ export function SignupForm() {
       return
     }
 
-    // Set session from returned tokens
-    if (
-      data &&
-      typeof data === 'object' &&
-      'session' in data &&
-      data.session
-    ) {
-      const supabase = createClient()
-      const session = data.session as {
-        access_token: string
-        refresh_token: string
-      }
-      await supabase.auth.setSession({
-        access_token: session.access_token,
-        refresh_token: session.refresh_token,
-      })
-    }
-
-    router.push(`/${values.username}`)
-    router.refresh()
+    // Redirect to OTP verification page
+    router.push(
+      `/verify-email?email=${encodeURIComponent(values.email)}&username=${encodeURIComponent(values.username)}`
+    )
   }
 
   return (
