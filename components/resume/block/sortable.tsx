@@ -5,56 +5,15 @@ import { Reorder, useDragControls } from 'framer-motion'
 import { Trash2, GripVertical } from 'lucide-react'
 import { useResume } from '@/components/providers/resume-provider'
 import { BlockEditor } from './editor'
-import {
-  WorkBlock,
-  EducationBlock,
-  SkillBlock,
-  ProjectBlock,
-  VolunteerBlock,
-  AwardBlock,
-  PublicationBlock,
-  LanguageBlock,
-  InterestBlock,
-  ReferenceBlock,
-  CertificateBlock,
-} from './view'
-import type {
-  SectionKey,
-  ResumeWorkItem,
-  ResumeEducationItem,
-  ResumeSkillItem,
-  ResumeProjectItem,
-  ResumeVolunteerItem,
-  ResumeAwardItem,
-  ResumePublicationItem,
-  ResumeLanguageItem,
-  ResumeInterestItem,
-  ResumeReferenceItem,
-  ResumeCertificateItem,
-} from '@/lib/types'
+import { BLOCK_COMPONENTS } from './view'
+import type { SectionKey } from '@/lib/types'
 
 type Item = Record<string, unknown> & { id: string }
 
-function BlockPreview({
-  section,
-  item,
-}: {
-  section: Exclude<SectionKey, 'basics'>
-  item: Item
-}) {
-  switch (section) {
-    case 'work':         return <WorkBlock item={item as unknown as ResumeWorkItem} />
-    case 'education':    return <EducationBlock item={item as unknown as ResumeEducationItem} />
-    case 'skills':       return <SkillBlock item={item as unknown as ResumeSkillItem} />
-    case 'projects':     return <ProjectBlock item={item as unknown as ResumeProjectItem} />
-    case 'volunteer':    return <VolunteerBlock item={item as unknown as ResumeVolunteerItem} />
-    case 'awards':       return <AwardBlock item={item as unknown as ResumeAwardItem} />
-    case 'publications': return <PublicationBlock item={item as unknown as ResumePublicationItem} />
-    case 'languages':    return <LanguageBlock item={item as unknown as ResumeLanguageItem} />
-    case 'interests':    return <InterestBlock item={item as unknown as ResumeInterestItem} />
-    case 'references':   return <ReferenceBlock item={item as unknown as ResumeReferenceItem} />
-    case 'certificates': return <CertificateBlock item={item as unknown as ResumeCertificateItem} />
-  }
+function BlockPreview({ section, item }: { section: Exclude<SectionKey, 'basics'>; item: Item }) {
+  const BlockComponent = BLOCK_COMPONENTS[section]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return <BlockComponent item={item as any} />
 }
 
 interface SortableBlockProps {
@@ -76,7 +35,7 @@ export function SortableBlock({ item, section, defaultExpanded = false }: Sortab
       containerRef.current?.querySelector<HTMLElement>('input, textarea')?.focus()
     }, 150)
     return () => clearTimeout(timer)
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [defaultExpanded])
 
   useEffect(() => {
     if (!expanded) return

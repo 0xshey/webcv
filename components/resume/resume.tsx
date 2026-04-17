@@ -9,36 +9,13 @@ import { BasicsEditor } from "./basics/editor";
 import { SortableSection } from "./section/sortable";
 import { PdfSettingsDialog } from "./pdf/pdf-settings-dialog";
 import {
-	WorkBlock,
-	EducationBlock,
-	SkillBlock,
-	ProjectBlock,
-	VolunteerBlock,
-	AwardBlock,
-	PublicationBlock,
-	LanguageBlock,
-	InterestBlock,
-	ReferenceBlock,
-	CertificateBlock,
+	BLOCK_COMPONENTS,
 	LinkCapsule,
 	EmailCapsule,
 	PhoneCapsule,
 } from "./block/view";
 import { RichTextDisplay } from "./rich-text/display";
-import type {
-	SectionKey,
-	ResumeWorkItem,
-	ResumeEducationItem,
-	ResumeSkillItem,
-	ResumeProjectItem,
-	ResumeVolunteerItem,
-	ResumeAwardItem,
-	ResumePublicationItem,
-	ResumeLanguageItem,
-	ResumeInterestItem,
-	ResumeReferenceItem,
-	ResumeCertificateItem,
-} from "@/lib/types";
+import type { SectionKey } from "@/lib/types";
 
 function BasicsView() {
 	const { content } = useResume();
@@ -84,52 +61,13 @@ function SectionContent({
 
 	if (items.length === 0) return null;
 
+	const BlockComponent = BLOCK_COMPONENTS[sectionKey];
 	return (
 		<div className="flex flex-col gap-5">
-			{sectionKey === "work" &&
-				(items as unknown as ResumeWorkItem[]).map((item) => (
-					<WorkBlock key={item.id} item={item} />
-				))}
-			{sectionKey === "education" &&
-				(items as unknown as ResumeEducationItem[]).map((item) => (
-					<EducationBlock key={item.id} item={item} />
-				))}
-			{sectionKey === "skills" &&
-				(items as unknown as ResumeSkillItem[]).map((item) => (
-					<SkillBlock key={item.id} item={item} />
-				))}
-			{sectionKey === "projects" &&
-				(items as unknown as ResumeProjectItem[]).map((item) => (
-					<ProjectBlock key={item.id} item={item} />
-				))}
-			{sectionKey === "volunteer" &&
-				(items as unknown as ResumeVolunteerItem[]).map((item) => (
-					<VolunteerBlock key={item.id} item={item} />
-				))}
-			{sectionKey === "awards" &&
-				(items as unknown as ResumeAwardItem[]).map((item) => (
-					<AwardBlock key={item.id} item={item} />
-				))}
-			{sectionKey === "publications" &&
-				(items as unknown as ResumePublicationItem[]).map((item) => (
-					<PublicationBlock key={item.id} item={item} />
-				))}
-			{sectionKey === "languages" &&
-				(items as unknown as ResumeLanguageItem[]).map((item) => (
-					<LanguageBlock key={item.id} item={item} />
-				))}
-			{sectionKey === "interests" &&
-				(items as unknown as ResumeInterestItem[]).map((item) => (
-					<InterestBlock key={item.id} item={item} />
-				))}
-			{sectionKey === "references" &&
-				(items as unknown as ResumeReferenceItem[]).map((item) => (
-					<ReferenceBlock key={item.id} item={item} />
-				))}
-			{sectionKey === "certificates" &&
-				(items as unknown as ResumeCertificateItem[]).map((item) => (
-					<CertificateBlock key={item.id} item={item} />
-				))}
+			{items.map((item) => (
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				<BlockComponent key={item.id} item={item as any} />
+			))}
 		</div>
 	);
 }

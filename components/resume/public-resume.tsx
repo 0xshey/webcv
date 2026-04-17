@@ -1,35 +1,7 @@
-import type {
-  ResumeContent,
-  ResumeStructure,
-  SectionKey,
-  ResumeWorkItem,
-  ResumeEducationItem,
-  ResumeSkillItem,
-  ResumeProjectItem,
-  ResumeVolunteerItem,
-  ResumeAwardItem,
-  ResumePublicationItem,
-  ResumeLanguageItem,
-  ResumeInterestItem,
-  ResumeReferenceItem,
-  ResumeCertificateItem,
-} from '@/lib/types'
+import type { ResumeContent, ResumeStructure, SectionKey } from '@/lib/types'
 import { RichTextDisplay } from './rich-text/display'
-import {
-  WorkBlock,
-  EducationBlock,
-  SkillBlock,
-  ProjectBlock,
-  VolunteerBlock,
-  AwardBlock,
-  PublicationBlock,
-  LanguageBlock,
-  InterestBlock,
-  ReferenceBlock,
-  CertificateBlock,
-} from './block/view'
+import { BLOCK_COMPONENTS, LinkCapsule, EmailCapsule, PhoneCapsule } from './block/view'
 import { Separator } from '@/components/ui/separator'
-import { LinkCapsule, EmailCapsule, PhoneCapsule } from './block/view'
 
 const SECTION_LABELS: Record<SectionKey, string> = {
   basics: 'Summary',
@@ -91,50 +63,11 @@ export function PublicResume({ content, structure }: PublicResumeProps) {
                 <Separator className="flex-1" />
               </div>
               <div className="flex flex-col gap-5">
-                {sectionKey === 'work' &&
-                  (items as ResumeWorkItem[]).map((item) => (
-                    <WorkBlock key={item.id} item={item} />
-                  ))}
-                {sectionKey === 'education' &&
-                  (items as ResumeEducationItem[]).map((item) => (
-                    <EducationBlock key={item.id} item={item} />
-                  ))}
-                {sectionKey === 'skills' &&
-                  (items as ResumeSkillItem[]).map((item) => (
-                    <SkillBlock key={item.id} item={item} />
-                  ))}
-                {sectionKey === 'projects' &&
-                  (items as ResumeProjectItem[]).map((item) => (
-                    <ProjectBlock key={item.id} item={item} />
-                  ))}
-                {sectionKey === 'volunteer' &&
-                  (items as ResumeVolunteerItem[]).map((item) => (
-                    <VolunteerBlock key={item.id} item={item} />
-                  ))}
-                {sectionKey === 'awards' &&
-                  (items as ResumeAwardItem[]).map((item) => (
-                    <AwardBlock key={item.id} item={item} />
-                  ))}
-                {sectionKey === 'publications' &&
-                  (items as ResumePublicationItem[]).map((item) => (
-                    <PublicationBlock key={item.id} item={item} />
-                  ))}
-                {sectionKey === 'languages' &&
-                  (items as ResumeLanguageItem[]).map((item) => (
-                    <LanguageBlock key={item.id} item={item} />
-                  ))}
-                {sectionKey === 'interests' &&
-                  (items as ResumeInterestItem[]).map((item) => (
-                    <InterestBlock key={item.id} item={item} />
-                  ))}
-                {sectionKey === 'references' &&
-                  (items as ResumeReferenceItem[]).map((item) => (
-                    <ReferenceBlock key={item.id} item={item} />
-                  ))}
-                {sectionKey === 'certificates' &&
-                  (items as ResumeCertificateItem[]).map((item) => (
-                    <CertificateBlock key={item.id} item={item} />
-                  ))}
+                {items.map((item) => {
+                  const BlockComponent = BLOCK_COMPONENTS[sectionKey]
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  return <BlockComponent key={(item as any).id} item={item as any} />
+                })}
               </div>
             </div>
           )
