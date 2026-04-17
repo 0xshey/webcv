@@ -14,6 +14,12 @@ import { parseLiItems, stripHtml } from '@/lib/html-utils'
 
 export type DocxFont = 'Calibri' | 'Arial' | 'Georgia' | 'Tahoma'
 
+function normalizeKeywords(keywords?: string[] | string, fallback = ''): string {
+  if (Array.isArray(keywords)) return keywords.join(', ')
+  if (typeof keywords === 'string') return keywords
+  return fallback
+}
+
 // ── Twip constants (1 inch = 1440 twips) ─────────────────────────────────────
 const RIGHT_EDGE = 9208 // ~6.4 in — right tab stop for dates
 const BODY_SIZE  = 22  // 11pt in half-points
@@ -154,14 +160,7 @@ function renderProjects(items: import('@/lib/types').ResumeProjectItem[], font: 
 }
 
 function renderSkills(items: import('@/lib/types').ResumeSkillItem[], font: DocxFont): ParaList {
-  return items.map((item) => {
-    const kw = Array.isArray(item.keywords)
-      ? item.keywords.join(', ')
-      : typeof item.keywords === 'string'
-        ? item.keywords
-        : item.level ?? ''
-    return inlineP(item.name, kw, font)
-  })
+  return items.map((item) => inlineP(item.name, normalizeKeywords(item.keywords, item.level ?? ''), font))
 }
 
 function renderVolunteer(items: import('@/lib/types').ResumeVolunteerItem[], font: DocxFont): ParaList {
@@ -221,11 +220,7 @@ function renderPublications(items: import('@/lib/types').ResumePublicationItem[]
 
 function renderInterests(items: import('@/lib/types').ResumeInterestItem[], font: DocxFont): ParaList {
   return items.map((item) => {
-    const kw = Array.isArray(item.keywords)
-      ? item.keywords.join(', ')
-      : typeof item.keywords === 'string'
-        ? item.keywords
-        : ''
+    const kw = normalizeKeywords(item.keywords)
     return kw ? inlineP(item.name, kw, font) : plainP(item.name, font)
   })
 }

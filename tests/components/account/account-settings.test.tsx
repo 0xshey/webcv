@@ -49,9 +49,9 @@ describe('AccountSettings rows', () => {
     expect(screen.getByText('Delete account')).toBeDefined()
   })
 
-  it('renders profile link with username', () => {
+  it('renders profile link copy button', () => {
     render(<AccountSettings {...defaultProps} />)
-    expect(screen.getByText('/testuser')).toBeDefined()
+    expect(screen.getByLabelText('Copy profile link')).toBeDefined()
   })
 
   it('does not show password fields until the row is clicked', () => {

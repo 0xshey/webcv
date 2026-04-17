@@ -31,13 +31,10 @@ export function SignupForm() {
       body: JSON.stringify(values),
     })
 
-    const data: unknown = await res.json()
+    const data = await res.json() as Record<string, unknown>
 
     if (!res.ok) {
-      const errorMsg =
-        data && typeof data === 'object' && 'error' in data
-          ? String((data as { error: unknown }).error)
-          : 'Something went wrong'
+      const errorMsg = typeof data?.error === 'string' ? data.error : 'Something went wrong'
       toast.error(errorMsg)
       setIsLoading(false)
       return

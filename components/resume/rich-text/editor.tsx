@@ -42,7 +42,7 @@ export function RichTextEditor({ value, onChange, placeholder, id }: RichTextEdi
     if (editor && value !== editor.getHTML()) {
       editor.commands.setContent(value)
     }
-  }, [value]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [value, editor])
 
   return (
     <div className="relative">
