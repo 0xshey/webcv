@@ -45,7 +45,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false)
     })
 
-    return () => subscription.unsubscribe()
+    // Eagerly recheck session when the tab regains focus after a long idle period.
+    // onAuthStateChange handles the state update when Supabase detects an expired
+    // token, but this forces a check on visibility so stale tabs don't stay "logged in".
+    const handleVisibility = async () => {
+      if (document.visibilityState !== 'visible') return
+      const { data: { session } } = await supabase.auth.getSession()
+      setSession(session)
+      setUser(session?.user ?? null)
+    }
+    document.addEventListener('visibilitychange', handleVisibility)
+
+    return () => {
+      subscription.unsubscribe()
+      document.removeEventListener('visibilitychange', handleVisibility)
+    }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const signOut = async () => {
