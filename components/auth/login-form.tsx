@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { loginSchema, type LoginFormValues } from '@/lib/validations/profile'
 import { Button } from '@/components/ui/button'
@@ -71,7 +72,12 @@ export function LoginForm() {
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="password">Password</Label>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="password">Password</Label>
+          <Link href="/forgot-password" className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors">
+            Forgot password?
+          </Link>
+        </div>
         <Input
           id="password"
           type="password"
