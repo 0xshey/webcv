@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useRef, useCallback, useSyncExternalStore } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { createPortal } from 'react-dom'
+import { useHydrated } from '@/lib/hooks'
 import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { Ellipsis, LogOut, Settings } from 'lucide-react'
@@ -18,11 +19,7 @@ export function SettingsMenu() {
   const { signOut } = useAuth()
   const router = useRouter()
 
-  const mounted = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false,
-  )
+  const mounted = useHydrated()
 
   const openMenu = useCallback(() => {
     const rect = triggerRef.current?.getBoundingClientRect()

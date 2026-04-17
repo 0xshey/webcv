@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { useHydrated } from '@/lib/hooks'
 import { Reorder } from 'framer-motion'
 import { useResume } from '@/components/providers/resume-provider'
 import { SortableBlock } from '../block/sortable'
@@ -35,9 +36,7 @@ export function SortableSection({ section, items }: SortableSectionProps) {
   const { dispatch } = useResume()
   const [localItems, setLocalItems] = useState(items)
   const [newItemId, setNewItemId] = useState<string | null>(null)
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => { setMounted(true) }, [])
+  const mounted = useHydrated()
 
   // Sync when items change externally (add / delete / edit)
   useEffect(() => {
