@@ -4,7 +4,7 @@ import { useState, useRef, useCallback, useSyncExternalStore } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
-import { Ellipsis, LogOut } from 'lucide-react'
+import { Ellipsis, LogOut, Settings } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/components/providers/auth-provider'
 import { useSizeMode } from '@/components/providers/size-mode-provider'
@@ -79,6 +79,12 @@ export function SettingsMenu() {
             </Button>
           ))}
         </div>
+
+        {/* Account */}
+        <Button variant="ghost" onClick={() => { closeMenu(); router.push('/account') }} className="justify-start">
+          <Settings />
+          Account
+        </Button>
 
         {/* Sign out */}
         <Button variant="ghost" onClick={handleSignOut} className="justify-start">
